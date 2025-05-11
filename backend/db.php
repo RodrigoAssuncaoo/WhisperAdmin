@@ -1,12 +1,14 @@
 <?php
-$host = 'localhost';      // Servidor MySQL
-$user = 'root';           // Nome de utilizador (normalmente 'root' no XAMPP)
-$pass = '';               // Palavra-passe (normalmente vazio no XAMPP)
-$db = 'lisbonwhisper';       // Nome da tua base de dados
+$host = 'localhost';
+$db   = 'lisbonwhisper';
+$user = 'root';
+$pass = '';
 
-$conn = new mysqli($host, $user, $pass, $db);
-
-if ($conn->connect_error) {
-    die("Erro na ligação à base de dados: " . $conn->connect_error);
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+    // Define o modo de erro para exceções
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erro na ligação à base de dados: " . $e->getMessage());
 }
 ?>

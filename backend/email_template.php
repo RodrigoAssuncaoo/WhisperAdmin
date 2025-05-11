@@ -10,7 +10,6 @@
         #outlook a {
             padding: 0;
         }
-
         body {
             margin: 0;
             padding: 0;
@@ -175,5 +174,4 @@
         </div><!--[if mso | IE]></td></tr></table><![endif]-->
     </div>
 </body>
-
 </html>
