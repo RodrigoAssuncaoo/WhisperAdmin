@@ -1,4 +1,5 @@
 <?php
+session_start(); // Inicia a sessão
 include 'includes/header.php';
 include 'includes/sidebar.php';
 include '../backend/db.php';
@@ -6,7 +7,7 @@ include '../backend/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   try {
-    $nome = trim($_POST['nome']);
+    $nome = trim($_POST['name']);
     $telefone = trim($_POST['telefone']);
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
@@ -16,11 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       throw new Exception("As passwords não coincidem.");
     }
 
+    // Inserir o novo utilizador
     $sqlInsert = 'INSERT INTO utilizadores (nome, telefone, email, password)
                   VALUES (:nome, :telefone, :email, :password)';
     $stmt = $PDO->prepare($sqlInsert);
     $stmt->execute([
-      'name' => $nome,
+      'nome' => $nome,
       'telefone' => $telefone,
       'email' => $email,
       'password' => password_hash($password, PASSWORD_DEFAULT)
@@ -33,14 +35,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sqlInsertToken = 'INSERT INTO signup_tokens (user_id, token, expires_at)
                       VALUES (:user_id, :token, :expires)';
     $stmt = $PDO->prepare($sqlInsertToken);
-    $stmt->execute(['user_id' => $userId, 'token' => $token, 'expires' => $expires]);
+    $stmt->execute([
+      'user_id' => $userId,
+      'token' => $token,
+      'expires' => $expires
+    ]);
 
-    // sendVerificationEmail($email, $token); // Apenas se tiveres o ficheiro e a função
-    header('Location: login.html');
+    // Guardar dados na sessão
+    $_SESSION['user_id'] = $userId;
+    $_SESSION['user_name'] = $nome;
+    $_SESSION['user_email'] = $email;
+
+    // sendVerificationEmail($email, $token); // Descomenta se estiver disponível
+
+    header('Location: dashboard.php'); // Redireciona para a área privada
     exit;
 
   } catch (Exception $e) {
-    echo "Erro ao criar conta: " . $e->getMessage();
+    echo "<div class='alert alert-danger'>Erro ao criar conta: " . $e->getMessage() . "</div>";
   }
 }
 ?>

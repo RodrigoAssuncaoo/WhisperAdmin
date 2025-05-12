@@ -8,7 +8,6 @@ use PHPMailer\PHPMailer\Exception;
 
 function sendVerificationEmail($email, $token){
     $mail = new PHPMailer(true);
-
     try {
         // SEND EMAIL to verify the account
         $mail->isSMTP();

@@ -12,7 +12,6 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 try{
-
     $headers = getallheaders();
     
     if(!isset($headers['Authorization'])){
