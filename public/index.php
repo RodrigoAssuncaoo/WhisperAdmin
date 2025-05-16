@@ -1,5 +1,8 @@
 <?php
 include 'include/head.php';
+session_start();  // garante que a sessão está ativa
+
+$isLogin = isset($_SESSION['user_id']); // verdadeiro se estiver logado, falso caso contrário
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +25,11 @@ include 'include/head.php';
                     <li class="nav-item"><a class="nav-link" href="#about">Everything about my project</a></li>
                     <li class="nav-item"><a class="nav-link" href="#avatar-section">Developers </a></li>
                     <li class="nav-item"><a class="nav-link" href="#pap-tools">Project Tools</a></li>
-                    <li class="nav-item"><a class="nav-link" href="admin/login.php">login</a></li>
+                    <?php if ($isLogin) { ?>
+                        <li class="nav-item"><a class="nav-link" href="/admin/logout.php">logout</a></li>
+                    <?php } else { ?>
+                        <li class="nav-item"><a class="nav-link" href="/admin/login.php">login</a></li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -117,7 +124,7 @@ include 'include/head.php';
             </div>
         </div>
     </section>
-    
+
     <!-- Footer-->
     <footer class="bg-light py-5">
         <div class="container px-4 px-lg-5">

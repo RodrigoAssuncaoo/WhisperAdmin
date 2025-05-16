@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+    $isLogin = isset($_SESSION['user_id']); // verdadeiro se estiver logado, falso caso contrário
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +41,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <a href="index.php" class="logo d-flex align-items-center">
                 <img src="../assets/img/logo/logo_em_grande/logo_corrigido.png" alt="" style="width: 160px; height: auto; object-fit: contain;">
-            </a>    
+            </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div><!-- End Logo -->
 
@@ -199,20 +205,35 @@
                 <li class="nav-item dropdown pe-3">
 
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-                        <span class="d-none d-md-block dropdown-toggle ps-2">Rodrigo</span>
+                        <span class="d-none d-md-block dropdown-toggle ps-2">
+                            <?php
+                            if (isset($_SESSION['nome'])) {
+                                echo htmlspecialchars($_SESSION['nome']);
+                            } else {
+                                echo 'Utilizador';
+                            }
+                            ?>
+                        </span>
                     </a><!-- End Profile Iamge Icon -->
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                         <li class="dropdown-header">
-                            <h6>Kevin Anderson</h6>
-                            <span>Web Designer</span>
+                            <h6>
+                                <?php
+                                if (isset($_SESSION['nome'])) {
+                                    echo htmlspecialchars($_SESSION['nome']);
+                                } else {
+                                    echo 'Utilizador';
+                                }
+                                ?>
+                            </h6>
+                            <span>Admin</span>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="users-profile.php">
+                            <a class="dropdown-item d-flex align-items-center" href="profile.php">
                                 <i class="bi bi-person"></i>
                                 <span>My Profile</span>
                             </a>
@@ -232,11 +253,12 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <a class="dropdown-item d-flex align-items-center" href="logout.php">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Sign Out</span>
                             </a>
                         </li>
+
 
                     </ul><!-- End Profile Dropdown Items -->
                 </li><!-- End Profile Nav -->

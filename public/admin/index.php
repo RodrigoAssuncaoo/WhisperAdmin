@@ -1,7 +1,9 @@
 <?php
+session_start();
 
 include 'includes/header.php';
 include 'includes/sidebar.php';
+var_dump($_SESSION);
 ?>
 
 <!DOCTYPE html>

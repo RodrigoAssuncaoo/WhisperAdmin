@@ -1,63 +1,72 @@
-<?php 
+<?php
 session_start();
-
 require_once '../../backend/db.php';
+include 'includes/styles.php';
+// var_dump($_SESSION); // Podes ativar isto só para testes
 
-// Se já está logado, redireciona
-if (isset($_SESSION['user_id'])) {
-    if ($_SESSION['is_admin']) {
-        header('Location: /admin/index.php');
-    } else {
-        header('Location: /'); // 
-    }
-    exit();
-}
+// SECRET KEY do reCAPTCHA
+$secretKey = "6Lc_Yz0rAAAAAKsaJ8eylk7LadyDn29OXWWzosZW";
 
-$erro = "";
-
-// Processar login
+// Lógica de login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+  // Verifica se o reCAPTCHA foi submetido
+  if (!isset($_POST['g-recaptcha-response'])) {
+    $erro = "Por favor confirma que não és um robô.";
+  } else {
+    // Verificação do reCAPTCHA com Google
+    $captchaResponse = $_POST['g-recaptcha-response'];
+    $remoteIP = $_SERVER['REMOTE_ADDR'];
 
-    if (empty($email) || empty($password)) {
-        $erro = "Por favor, preencha todos os campos.";
-    } else {
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $url = "https://www.google.com/recaptcha/api/siteverify";
+    $data = [
+      'secret' => $secretKey,
+      'response' => $captchaResponse,
+      'remoteip' => $remoteIP
+    ];
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Guardar dados na sessão
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['nome'];
-                $_SESSION['is_admin'] = $user['isAdmin'];
+    $options = [
+      'http' => [
+        'method'  => 'POST',
+        'header'  => 'Content-type: application/x-www-form-urlencoded',
+        'content' => http_build_query($data)
+      ]
+    ];
+    $context = stream_context_create($options);
+    $verify = file_get_contents($url, false, $context);
+    $captchaSuccess = json_decode($verify);
 
-                // Redirecionar consoante isAdmin
-                if ($user['isAdmin']) {
-                    header('Location: /admin/index.php');
-                } else {
-                    header('Location: /'); // Página pública principal
-                }
-                exit();
-            } else {
-                $erro = "Email ou palavra-passe incorretos.";
-            }
-        } catch (PDOException $e) {
-            $erro = "Erro ao tentar fazer login: " . $e->getMessage();
+    if ($captchaSuccess->success) {
+      // CAPTCHA válido, continua com o login
+      $email = trim($_POST['email']);
+      $password = trim($_POST['password']);
+
+      try {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+          // Autenticação bem-sucedida
+          $_SESSION['user_id'] = $user['id'];
+          $_SESSION['nome'] = $user['nome'];
+          header('Location: index.php');
+          exit;
+        } else {
+          $erro = "Email ou palavra-passe incorretos.";
         }
+      } catch (Exception $e) {
+        $erro = "Erro no login: " . $e->getMessage();
+      }
+    } else {
+      $erro = "Falha na verificação CAPTCHA. Tenta novamente.";
     }
+  }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - Whisper</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-</head>
+<html lang="pt">
+
 <body>
   <main>
     <div class="container">
@@ -80,13 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="text-center small">Introduza o seu email e palavra-passe</p>
                   </div>
 
-                  <?php if (!empty($erro)): ?>
-                    <div class="alert alert-danger" role="alert">
-                      <?= htmlspecialchars($erro) ?>
-                    </div>
+                  <?php if (isset($erro)): ?>
+                    <div class="alert alert-danger text-center"><?= htmlspecialchars($erro) ?></div>
                   <?php endif; ?>
 
-                  <!-- FORMULÁRIO CORRIGIDO -->
                   <form class="row g-3 needs-validation" method="POST" action="" novalidate>
                     <div class="col-12">
                       <label for="yourEmail" class="form-label">Email</label>
@@ -100,11 +106,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       <div class="invalid-feedback">Introduza a sua palavra-passe.</div>
                     </div>
 
+                    <!-- reCAPTCHA -->
+                    <div class="col-12">
+                      <div class="g-recaptcha" data-sitekey="6Lc_Yz0rAAAAAM_ZttifOn4acP3yES6dJhi_bO-z"></div>
+                    </div>
+
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Entrar</button>
                     </div>
+
                     <div class="col-12">
-                      <p class="small mb-0">Ainda não tem conta? <a href="pages-register.html">Crie uma</a></p>
+                      <p class="small mb-0">Ainda não tem conta? <a href="signup.php">Crie uma conta</a></p>
                     </div>
                   </form>
 
@@ -114,10 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           </div>
         </div>
-
       </section>
     </div>
   </main>
+
+  <!-- reCAPTCHA script -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
     <i class="bi bi-arrow-up-short"></i>
@@ -126,4 +140,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php include 'includes/script.php' ?>
   <?php include 'includes/footer.php' ?>
 </body>
+
 </html>
