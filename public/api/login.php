@@ -1,9 +1,7 @@
 <?php
+header("Content-Type: application/json");
 
-require '../../vendor/autoload.php';
-
-//var_dump($_POST);
-
+require_once '../../vendor/autoload.php';
 include_once '../../backend/connection.php';
 include_once '../../backend/models/user.php';
 
@@ -11,79 +9,62 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 try {
+    $email = isset($_POST['email']) ? trim($_POST['email']) : null;
+    $password = isset($_POST['password']) ? trim($_POST['password']) : null;
 
-    // Validar se tipo de pedido é o correto (POST)
-    if ('POST' != $_SERVER['REQUEST_METHOD']) {
-        throw new Exception('Método não permitido');
+    if (!$email || !$password) {
+        http_response_code(400);
+        echo json_encode(["error" => "Email e senha são obrigatórios."]);
+        exit;
     }
 
-    if (count($_POST) != 2) {
-        throw new Exception('Número de parâmetros inválidos');
-    }
-    // Validar se o valor das variáveis é o correto
-    if (!isset($_POST['email']) || !isset($_POST['password'])) {
-        throw new Exception('Parâmetros inválidos');
+    if (!$connection) {
+        throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $stmt = $connection->prepare("SELECT id, nome, email, password, isAdmin FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if (strlen($email) == 0 || strlen($password) == 0) {
-        throw new Exception('Dados inválidos!');
+    if ($result->num_rows === 0) {
+        http_response_code(401);
+        echo json_encode(["error" => "Credenciais inválidas."]);
+        exit;
     }
 
-    $sqlEmail = "SELECT * FROM utilizadores WHERE email = ? AND password = ?";
+    $user = $result->fetch_assoc();
 
-    if ($stmt = mysqli_prepare($connection, $sqlEmail)) {
-        mysqli_stmt_bind_param($stmt, "ss", $email, $password);
-
-        if (mysqli_stmt_execute($stmt)) {
-            mysqli_stmt_bind_result($stmt, $id, $isAdmin, $nome, $dataNascimento, $telefone, $email, $password);
-
-            if (mysqli_stmt_fetch($stmt)) {
-                $user = new User($id, $isAdmin, $nome, $dataNascimento, $telefone, $email, $password);
-            } else {
-                throw new Exception('Utilizador não encontrado!');
-            }
-        } else {
-            throw new Exception('Erro ao executar a query: ' . mysqli_error($connection));
-        }
-    } else {
-        throw new Exception('Erro ao preparar a query: ' . mysqli_error($connection));
+    if (!password_verify($password, $user['password'])) {
+        http_response_code(401);
+        echo json_encode(["error" => "Credenciais inválidas."]);
+        exit;
     }
-    //configurações do JWT
-    $key = 'carshub_jwtToken';
 
+    // Gerar token JWT
+    $secretKey = "SUA_CHAVE_SECRETA"; // Substitua por uma constante segura ou carregue de um .env
     $payload = [
-        'iss' => 'http://mydev.carshub.com',
-        'aud' => 'http://mydev.carshub.com',
-        'iat' => time(),
-        'exp' => time() + 3600, // 1 hora
-        'data' => [
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
+        "iss" => "seusite.com",
+        "aud" => "seusite.com",
+        "iat" => time(),
+        "exp" => time() + (60 * 60), // 1 hora de validade
+        "data" => [
+            "id" => $user['id'],
+            "nome" => $user['nome'],
+            "email" => $user['email'],
+            "isAdmin" => $user['isAdmin']
         ]
     ];
 
-    //criar token
-    $jwt = JWT::encode($payload, $key, 'HS256');
+    $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
-    $result = array(
-        'status' => 'success',
-        'data' => [
-            'user' => 'Aqui vem dados do utilizador',
-            'jwt' => $jwt
-        ],
-    );
+    http_response_code(200);
+    echo json_encode([
+        "message" => "Login bem-sucedido.",
+        "token" => $jwt
+    ]);
 
-    echo (json_encode($result));
 } catch (Exception $e) {
-    $result = [
-        'status' => 'FALSE',
-        'message' => $e->getMessage()
-    ];
-
-    echo json_encode($result);
-} finally {
-    mysqli_close($connection);
+    http_response_code(500);
+    echo json_encode(["error" => "Erro interno: " . $e->getMessage()]);
 }

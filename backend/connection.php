@@ -3,7 +3,7 @@
 $dns = 'localhost';
 $username = 'root'; //depois quando criar o user tenho de meter o nome do user
 $passwordDatabase = ''; //depois quando criar o user tenho de meter a password do user
-$database = 'private_info_app';
+$database = 'lisbonwhisper';
 
 $connection = mysqli_connect($dns, $username, $passwordDatabase, $database);
 
