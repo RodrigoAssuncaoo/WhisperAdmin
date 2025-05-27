@@ -3,31 +3,28 @@ header("Content-Type: application/json");
 
 require_once '../../../vendor/autoload.php';
 include_once '../../../backend/connection.php';
-include_once '../../../backend/models/guias.php';  // A classe Guia deve estar aqui
+include_once '../../../backend/models/pontos.php';
 include_once '../../../backend/auth.php';
 
 try {
-    // Verifica conexão MySQLi
     if (!$connection) {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    // Verifica JWT
-    verificarToken($connection);
+    verificarToken($connection); // Verificação JWT
 
-    // Prepara a query com mysqli
-    $sql = "SELECT id, nome, contacto, email, idiomasFalados FROM guias";
+    $sql = "SELECT id, nome, longitude, latitude, ponto_inicial, ponto_final FROM pontos";
     $stmt = mysqli_prepare($connection, $sql);
 
     if (mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_bind_result($stmt, $id, $nome, $contacto, $email, $idiomasFalados);
+        mysqli_stmt_bind_result($stmt, $id, $nome, $longitude, $latitude, $pontoInicial, $pontoFinal);
 
-        $guias = [];
+        $pontos = [];
         while (mysqli_stmt_fetch($stmt)) {
-            $guias[] = new Guia($id, $nome, $contacto, $email, $idiomasFalados);
+            $pontos[] = new Ponto($id, $nome, $longitude, $latitude, $pontoInicial, $pontoFinal);
         }
 
-        echo json_encode(["status" => "success", "data" => $guias]);
+        echo json_encode(["status" => "success", "data" => $pontos]);
     } else {
         throw new Exception("Erro ao executar a query.");
     }

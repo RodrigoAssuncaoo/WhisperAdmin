@@ -4,14 +4,19 @@ class Roteiro implements JsonSerializable
 {
     private $id;
     private $nome;
-    private $tipoRoteiro;
+    private $idPontos;
 
     
-    public function __construct($id, $nome, $tipoRoteiro)
+    public function __construct($id, $nome, $idPontos)
     {
         $this->id = $id;
         $this->nome = $nome;
-        $this->tipoRoteiro = $tipoRoteiro;
+        $this->idPontos = [];
+    }
+
+    public function addIdPonto($idPonto)
+    {
+        $this->idPontos[] = $idPonto;
     }
 
     public function getId()
@@ -24,23 +29,19 @@ class Roteiro implements JsonSerializable
         return $this->nome;
     }
 
-    public function getTipoRoteiro()
-    {
-        return $this->tipoRoteiro;
-    }
 
     public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,
             'nome' => $this->nome,
-            'tipoRoteiro' => $this->tipoRoteiro,
+            'idPontos' => $this->idPontos
         ];
     }
 
     public function toString()
     {
-        return "ID: " . $this->id . " Nome: " . $this->nome . " Tipo Roteiro: " . $this->tipoRoteiro;
+        return "ID: " . $this->id . " Nome: " . $this->nome . " Pontos: " . implode(", ", $this->idPontos);
     }
 
 }

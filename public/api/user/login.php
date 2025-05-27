@@ -1,9 +1,10 @@
 <?php
 header("Content-Type: application/json");
 
-require_once '../../vendor/autoload.php';
-include_once '../../backend/connection.php';
-include_once '../../backend/models/user.php';
+
+require_once '../../../vendor/autoload.php';
+include_once '../../../backend/connection.php';
+include_once '../../../backend/models/user.php'; 
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
