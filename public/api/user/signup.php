@@ -14,6 +14,7 @@ try {
     $isAdmin = isset($_POST['isAdmin']) && $_POST['isAdmin'] === 'true' ? 1 : 0;
 
     $isAdmin = ($isAdmin == 1) ? 1 : 0; // Garantir que isAdmin é 0 ou 1
+
     // Verificar se todos os campos obrigatórios foram preenchidos
     if (!$nome || !$contacto || !$email || !$password || !$confirmPassword) {
         http_response_code(400);

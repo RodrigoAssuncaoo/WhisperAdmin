@@ -5,9 +5,12 @@ require_once '../../../vendor/autoload.php';
 include_once '../../../backend/connection.php';
 include_once '../../../backend/auth.php';
 
+var_dump($_POST);
+
+
 try {
     // Garante que o método usado é PUT
-    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo json_encode(["error" => "Método não permitido"]);
         exit;

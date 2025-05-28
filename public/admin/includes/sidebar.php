@@ -19,8 +19,8 @@
             </a>
             <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                 <li>
-                    <a href="tables-data.php">
-                        <i class="bi bi-circle"></i><span>Data Tables</span>
+                    <a href="usersTableS.php">
+                        <i class="bi bi-circle"></i><span>Users Table</span>
                     </a>
                 </li>
             </ul>
