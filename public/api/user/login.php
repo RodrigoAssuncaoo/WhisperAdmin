@@ -1,7 +1,6 @@
 <?php
 header("Content-Type: application/json");
 
-
 require_once '../../../vendor/autoload.php';
 include_once '../../../backend/connection.php';
 include_once '../../../backend/models/user.php'; 
@@ -23,7 +22,8 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    $stmt = $connection->prepare("SELECT id, nome, email, password, isAdmin FROM users WHERE email = ?");
+    
+    $stmt = $connection->prepare("SELECT id, nome, email, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -53,7 +53,7 @@ try {
             "id" => $user['id'],
             "nome" => $user['nome'],
             "email" => $user['email'],
-            "isAdmin" => $user['isAdmin']
+            "role" => $user['role'] 
         ]
     ];
 
@@ -69,3 +69,4 @@ try {
     http_response_code(500);
     echo json_encode(["error" => "Erro interno: " . $e->getMessage()]);
 }
+?>

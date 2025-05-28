@@ -1,10 +1,9 @@
 <?php
 header("Content-Type: application/json");
 
-require_once '../../vendor/autoload.php';
-include_once '../../backend/connection.php';
-include_once '../../backend/models/user.php';
-
+require_once '../../../vendor/autoload.php';
+include_once '../../../backend/connection.php';
+include_once '../../../backend/models/user.php';
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
@@ -12,19 +11,14 @@ try {
         exit;
     }
 
-    $rawInput = file_get_contents("php://input");
-    $data = json_decode($rawInput, true);
+    // Lê dados do formulário (form-data)
+    $nome = $_POST['nome'] ?? null;
+    $contacto = $_POST['contacto'] ?? null;
+    $email = $_POST['email'] ?? null;
+    $password = $_POST['password'] ?? null;
+    $confirmPassword = $_POST['confirmPassword'] ?? null;
 
-    $nome = $data['nome'] ?? null;
-    $contacto = $data['contacto'] ?? null;
-    $email = $data['email'] ?? null;
-    $password = $data['password'] ?? null;
-    $confirmPassword = $data['confirmPassword'] ?? null;
-    $isAdmin = isset($data['isAdmin']) && $data['isAdmin'] === true ? 1 : 0;
-
-    $isAdmin = ($isAdmin == 1) ? 1 : 0; // Garantir que isAdmin é 0 ou 1
-
-    // Verificar se todos os campos obrigatórios foram preenchidos
+    // Verifica campos obrigatórios
     if (!$nome || !$contacto || !$email || !$password || !$confirmPassword) {
         http_response_code(400);
         echo json_encode(["error" => "Todos os campos são obrigatórios."]);
@@ -39,6 +33,7 @@ try {
 
     if (!$connection) throw new Exception("Erro na conexão com o banco de dados.");
 
+    // Verifica se já existe o email
     $stmt = $connection->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -51,8 +46,10 @@ try {
     }
 
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    $stmt = $connection->prepare("INSERT INTO users (nome, contacto, email, password, isAdmin, created_at, expires_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
-    $stmt->bind_param("ssssi", $nome, $contacto, $email, $hashedPassword, $isAdmin);
+    $role = 3; // Valor fixo para novos usuários
+
+    $stmt = $connection->prepare("INSERT INTO users (nome, contacto, email, password, role, created_at, expires_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+    $stmt->bind_param("ssssi", $nome, $contacto, $email, $hashedPassword, $role);
 
     if ($stmt->execute()) {
         http_response_code(201);
@@ -60,6 +57,7 @@ try {
     } else {
         throw new Exception("Erro ao registrar usuário.");
     }
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["error" => $e->getMessage()]);
