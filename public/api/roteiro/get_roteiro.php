@@ -10,14 +10,29 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
+    verificarToken($connection);
+
     // Obter o ID da query string
     $id = $_GET['id'] ?? null;
 
-    $sql = "SELECT id, nome, contacto, email, idiomasFalados WHERE id = ?";
+    if (!$id || !is_numeric($id)) {
+        throw new Exception("ID inválido.");
+    }
+
+    $sql = "SELECT id, nome, idPontos FROM roteiros WHERE id = ?";
     $stmt = mysqli_prepare($connection, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
 
+    $result = mysqli_stmt_get_result($stmt);
+    $roteiro = mysqli_fetch_assoc($result);
+
+    if ($roteiro) {
+        echo json_encode($roteiro);
+    } else {
+        http_response_code(404);
+        echo json_encode(["error" => "Avaliacao não encontrado."]);
+    }
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode(["error" => $e->getMessage()]);
