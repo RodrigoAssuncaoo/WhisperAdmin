@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $confirmPassword = trim($_POST['confirm-password']);
-//----------------capcha google-------------------------------------------
+    //----------------capcha google-------------------------------------------
     // Verificar reCAPTCHA
     if (!isset($_POST['g-recaptcha-response'])) {
       throw new Exception("Por favor confirme que não é um robô.");
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $context = stream_context_create($options);
     $verify = file_get_contents($url, false, $context);
     $captcha_success = json_decode($verify);
-//-----------------------------validacoes---------------------------------------------------------------
+    //-----------------------------validacoes---------------------------------------------------------------
     if (!$captcha_success->success) {
       throw new Exception("Validação reCAPTCHA falhou. Tente novamente.");
     }
@@ -55,18 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       throw new Exception("O email inserido não é válido.");
     }
 
-    // Confirmar password
+      // Confirmar password
     if ($password !== $confirmPassword) {
       throw new Exception("As passwords não coincidem.");
     }
-//-----------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------
     // Geração de token e validade
     $token = bin2hex(random_bytes(16));
     $expires_at = date('Y-m-d H:i:s', time() + 600);
 
     // Inserção no banco
-    $sqlInsert = "INSERT INTO users (nome, contacto, email, password, token, expires_at)
-                  VALUES (:nome, :contacto, :email, :password, :token, :expires_at)";
+    $sqlInsert = "INSERT INTO users (nome, contacto, email, password, token, expires_at, role)
+                  VALUES (:nome, :contacto, :email, :password, :token, :expires_at, :role)";
     $stmt = $pdo->prepare($sqlInsert);
     $stmt->execute([
       'nome' => $nome,
@@ -74,7 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       'email' => $email,
       'password' => password_hash($password, PASSWORD_DEFAULT),
       'token' => $token,
-      'expires_at' => $expires_at
+      'expires_at' => $expires_at,
+      'role' => 3
     ]);
 
     header('Location: login.php');
@@ -190,4 +191,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   <?php include 'includes/footer.php'; ?>
 </body>
+
 </html>
