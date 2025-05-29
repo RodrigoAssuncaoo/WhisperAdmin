@@ -6,41 +6,34 @@ include_once '../../../backend/connection.php';
 include_once '../../../backend/auth.php';
 
 try {
-    // Garante que o método é PUT
-    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo json_encode(["error" => "Método não permitido"]);
         exit;
     }
 
-    // Verifica ligação à base de dados
     if (!$connection) {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    // Verifica o token de autenticação
     verificarToken($connection);
 
-    // Captura e valida os dados do corpo da requisição
-    $rawInput = file_get_contents("php://input");
-    $data = json_decode($rawInput, true);
+    // Captura os dados do form-data
+    $id = $_POST['id'] ?? null;
+    $nome = trim($_POST['nome'] ?? '');
+    $contacto = trim($_POST['contacto'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? null;
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Erro ao interpretar JSON.");
-    }
-
-    $id = $data['id'] ?? null;
-    $nome = trim($data['nome'] ?? '');
-    $contacto = trim($data['contacto'] ?? '');
-    $email = trim($data['email'] ?? '');
-    $password = $data['password'] ?? null;
-    $isAdmin = isset($data['isAdmin']) ? (bool)$data['isAdmin'] : false;
+    // role como tinyint (0,1,2,...)
+    // Força converter para inteiro, padrão 0 se não enviado
+    $role = isset($_POST['role']) ? (int)$_POST['role'] : 0;
 
     if (!$id || empty($nome) || empty($contacto) || empty($email)) {
         throw new Exception("Dados obrigatórios em falta.");
     }
 
-    // Verifica se o e-mail pertence a outro utilizador
+    // Verifica se o email já pertence a outro utilizador
     $stmt = mysqli_prepare($connection, "SELECT id FROM users WHERE email = ? AND id != ?");
     mysqli_stmt_bind_param($stmt, "si", $email, $id);
     mysqli_stmt_execute($stmt);
@@ -51,16 +44,16 @@ try {
     }
     mysqli_stmt_close($stmt);
 
-    // Se password for enviada, atualiza também
     if (!empty($password)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "UPDATE users SET nome = ?, contacto = ?, email = ?, password = ?, isAdmin = ?, updated_at = NOW() WHERE id = ?";
+        $sql = "UPDATE users SET nome = ?, contacto = ?, email = ?, password = ?, role = ?, expires_at = NOW() WHERE id = ?";
         $stmt = mysqli_prepare($connection, $sql);
-        mysqli_stmt_bind_param($stmt, "ssssii", $nome, $contacto, $email, $hashedPassword, $isAdmin, $id);
+        // bind_param: s = string, i = int
+        mysqli_stmt_bind_param($stmt, "ssssii", $nome, $contacto, $email, $hashedPassword, $role, $id);
     } else {
-        $sql = "UPDATE users SET nome = ?, contacto = ?, email = ?, isAdmin = ?, updated_at = NOW() WHERE id = ?";
+        $sql = "UPDATE users SET nome = ?, contacto = ?, email = ?, role = ?, expires_at = NOW() WHERE id = ?";
         $stmt = mysqli_prepare($connection, $sql);
-        mysqli_stmt_bind_param($stmt, "sssii", $nome, $contacto, $email, $isAdmin, $id);
+        mysqli_stmt_bind_param($stmt, "sssii", $nome, $contacto, $email, $role, $id);
     }
 
     if (mysqli_stmt_execute($stmt)) {

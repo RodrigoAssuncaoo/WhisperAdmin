@@ -14,14 +14,15 @@ try {
     // Verificar autenticação JWT
     $userData = verificarToken($connection); // opcional: pode usar esse retorno pra limitar acesso se quiser
 
-    $sql = "SELECT id, isAdmin, nome, contacto, email, token, password, created_at, expires_at FROM users";
+    // Agora seleciona a coluna 'role' em vez de 'isAdmin'
+    $sql = "SELECT id, role, nome, contacto, email, token, password, created_at, expires_at FROM users";
 
     if ($stmt = mysqli_prepare($connection, $sql)) {
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_bind_result(
                 $stmt,
                 $id,
-                $isAdmin,
+                $role,
                 $nome,
                 $contacto,
                 $email,
@@ -33,7 +34,8 @@ try {
 
             $users = [];
             while (mysqli_stmt_fetch($stmt)) {
-                $users[] = new User($id, $isAdmin, $nome, $contacto, $email, $token, $password, $created_at, $expires_at);
+                // Ajusta o construtor User para aceitar 'role' em vez de 'isAdmin'
+                $users[] = new User($id, $role, $nome, $contacto, $email, $token, $password, $created_at, $expires_at);
             }
 
             echo json_encode([

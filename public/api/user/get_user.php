@@ -21,7 +21,8 @@ try {
 
     $id = intval($_GET['id']); // Proteção básica contra injeção
 
-    $sql = "SELECT id, isAdmin, nome, contacto, email, token, password, created_at, expires_at FROM users WHERE id = ?";
+    // Alterado para selecionar 'role' em vez de 'isAdmin'
+    $sql = "SELECT id, role, nome, contacto, email, token, password, created_at, expires_at FROM users WHERE id = ?";
 
     if ($stmt = mysqli_prepare($connection, $sql)) {
         mysqli_stmt_bind_param($stmt, "i", $id);
@@ -30,7 +31,7 @@ try {
             mysqli_stmt_bind_result(
                 $stmt,
                 $id,
-                $isAdmin,
+                $role,
                 $nome,
                 $contacto,
                 $email,
@@ -41,7 +42,8 @@ try {
             );
 
             if (mysqli_stmt_fetch($stmt)) {
-                $user = new User($id, $isAdmin, $nome, $contacto, $email, $token, $password, $created_at, $expires_at);
+                // Passa role para o construtor User
+                $user = new User($id, $role, $nome, $contacto, $email, $token, $password, $created_at, $expires_at);
 
                 echo json_encode([
                     "status" => "success",
