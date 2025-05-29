@@ -48,7 +48,7 @@ try {
         "iss" => "seusite.com",
         "aud" => "seusite.com",
         "iat" => time(),
-        "exp" => time() + (60 * 60), // 1 hora de validade
+        "exp" => time() + (24 * 60 * 60), // 24 horas de validade
         "data" => [
             "id" => $user['id'],
             "nome" => $user['nome'],

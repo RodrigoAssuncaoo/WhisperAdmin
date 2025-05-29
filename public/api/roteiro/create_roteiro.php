@@ -23,7 +23,7 @@ try {
     $data = json_decode($rawInput, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Erro ao interpretar o JSON enviado.");
+        throw new Exception("Erro ao interpretar o JSON enviado: " . json_last_error_msg());
     }
 
     $nome = $data['nome'] ?? null;
