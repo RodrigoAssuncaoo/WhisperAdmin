@@ -6,49 +6,33 @@ include_once '../../../backend/connection.php';
 include_once '../../../backend/auth.php';
 
 try {
-    // Verifica conexão com a base de dados
-    if (!$connection) {
-        throw new Exception("Erro na conexão com o banco de dados.");
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(["error" => "Método não permitido"]);
+        exit;
     }
 
-    // Verifica o token de autenticação
     verificarToken($connection);
 
-    // Lê e interpreta o corpo JSON da requisição
-    $rawInput = file_get_contents("php://input");
-    $data = json_decode($rawInput, true);
+    $id = $_POST['id'] ?? null;
+    $id_tipo_roteiro = $_POST['id_tipo_roteiro'] ?? null;
+    $nome = $_POST['nome'] ?? null;
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Erro ao processar o JSON enviado.");
+    if (!$id || !$id_tipo_roteiro || trim($nome) === "") {
+        throw new Exception("Dados inválidos ou incompletos.");
     }
 
-    // Recolhe e valida os dados
-    $id = $data['id'] ?? null;
-    $nome = $data['nome'] ?? null;
-
-    if (!$id || !$nome) {
-        throw new Exception("Dados inválidos ou incompletos. 'id' e 'nome' são obrigatórios.");
-    }
-
-    // Atualiza o nome do roteiro
-    $sql = "UPDATE roteiros SET nome = ? WHERE id = ?";
+    $sql = "UPDATE roteiros SET id_tipo_roteiro = ?, nome = ? WHERE id = ?";
     $stmt = mysqli_prepare($connection, $sql);
-    mysqli_stmt_bind_param($stmt, "si", $nome, $id);
+    mysqli_stmt_bind_param($stmt, "isi", $id_tipo_roteiro, $nome, $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
-            echo json_encode([
-                "status" => "success",
-                "mensagem" => "Roteiro atualizado com sucesso."
-            ]);
-        } else {
-            echo json_encode([
-                "status" => "warning",
-                "mensagem" => "Nenhuma alteração feita (ID inexistente ou nome igual)."
-            ]);
-        }
+        echo json_encode([
+            "status" => "success",
+            "mensagem" => "Roteiro atualizado com sucesso"
+        ]);
     } else {
-        throw new Exception("Erro ao atualizar o roteiro.");
+        throw new Exception("Erro ao atualizar roteiro: " . mysqli_stmt_error($stmt));
     }
 
     mysqli_stmt_close($stmt);
@@ -56,6 +40,6 @@ try {
 
 } catch (Exception $e) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "mensagem" => $e->getMessage()]);
+    echo json_encode(["error" => $e->getMessage()]);
 }
 ?>

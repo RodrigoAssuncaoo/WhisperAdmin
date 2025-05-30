@@ -12,41 +12,27 @@ try {
         exit;
     }
 
-    if (!$connection) {
-        throw new Exception("Erro na conexão com a base de dados.");
-    }
-
     verificarToken($connection);
 
-    // Lê o corpo da requisição
-    $rawInput = file_get_contents("php://input");
-    $data = json_decode($rawInput, true);
+    $id_tipo_roteiro = $_POST['id_tipo_roteiro'] ?? null;
+    $nome = $_POST['nome'] ?? null;
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Erro ao interpretar o JSON enviado: " . json_last_error_msg());
+    if (!$id_tipo_roteiro || trim($nome) === "") {
+        throw new Exception("Dados inválidos ou incompletos.");
     }
 
-    $nome = $data['nome'] ?? null;
-
-    if (!$nome) {
-        throw new Exception("O nome do roteiro é obrigatório.");
-    }
-
-    $sql = "INSERT INTO roteiros (nome) VALUES (?)";
+    $sql = "INSERT INTO roteiros (id_tipo_roteiro, nome) VALUES (?, ?)";
     $stmt = mysqli_prepare($connection, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $nome);
+    mysqli_stmt_bind_param($stmt, "is", $id_tipo_roteiro, $nome);
 
     if (mysqli_stmt_execute($stmt)) {
-        $idNovo = mysqli_insert_id($connection);
-
         echo json_encode([
             "status" => "success",
-            "mensagem" => "Roteiro criado com sucesso.",
-            "id" => $idNovo,
-            "nome" => $nome
+            "mensagem" => "Roteiro criado com sucesso",
+            "id_inserido" => mysqli_insert_id($connection)
         ]);
     } else {
-        throw new Exception("Erro ao criar o roteiro.");
+        throw new Exception("Erro ao criar roteiro: " . mysqli_stmt_error($stmt));
     }
 
     mysqli_stmt_close($stmt);
@@ -54,6 +40,6 @@ try {
 
 } catch (Exception $e) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "mensagem" => $e->getMessage()]);
+    echo json_encode(["error" => $e->getMessage()]);
 }
 ?>
