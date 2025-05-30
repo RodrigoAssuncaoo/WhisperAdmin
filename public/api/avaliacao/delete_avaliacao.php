@@ -6,8 +6,7 @@ include_once '../../../backend/connection.php';
 include_once '../../../backend/auth.php';
 
 try {
-    // ATENÇÃO: apenas para testes — idealmente deve aceitar só DELETE
-    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE' && $_SERVER['REQUEST_METHOD'] !== 'GET') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
         http_response_code(405);
         echo json_encode(["error" => "Método não permitido"]);
         exit;
@@ -19,26 +18,41 @@ try {
 
     verificarToken($connection);
 
-    // Obter ID via query string: ?id=5
-    $id = $_GET['id'] ?? null;
+    // Lê o ID da query string
+    parse_str(file_get_contents("php://input"), $data);
+    $id = $_GET['id'] ?? $data['id'] ?? null;
 
     if (!$id || !is_numeric($id)) {
         throw new Exception("ID inválido ou não fornecido.");
     }
 
-    // Apagar a avaliação
-    $stmt = mysqli_prepare($connection, "DELETE FROM avaliacoes WHERE id = ?");
+    // Verifica se existe
+    $checkSql = "SELECT id FROM avaliacoes WHERE id = ?";
+    $checkStmt = mysqli_prepare($connection, $checkSql);
+    mysqli_stmt_bind_param($checkStmt, "i", $id);
+    mysqli_stmt_execute($checkStmt);
+    $checkResult = mysqli_stmt_get_result($checkStmt);
+
+    if (mysqli_num_rows($checkResult) === 0) {
+        throw new Exception("Avaliação não encontrada.");
+    }
+
+    // Elimina a avaliação
+    $sql = "DELETE FROM avaliacoes WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
-            echo json_encode(["status" => "success", "mensagem" => "Avaliação eliminada com sucesso"]);
-        } else {
-            echo json_encode(["status" => "warning", "mensagem" => "ID não encontrado ou já eliminado"]);
-        }
+        echo json_encode([
+            "status" => "success",
+            "mensagem" => "Avaliação eliminada com sucesso."
+        ]);
     } else {
-        throw new Exception("Erro ao eliminar a avaliação.");
+        throw new Exception("Erro ao eliminar avaliação: " . mysqli_stmt_error($stmt));
     }
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($connection);
 
 } catch (Exception $e) {
     http_response_code(400);

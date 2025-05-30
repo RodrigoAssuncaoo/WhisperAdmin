@@ -3,7 +3,6 @@ header("Content-Type: application/json");
 
 require_once '../../../vendor/autoload.php';
 include_once '../../../backend/connection.php';
-include_once '../../../backend/models/avaliacoes.php';
 include_once '../../../backend/auth.php';
 
 try {
@@ -11,25 +10,27 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    verificarToken($connection); // Verificação JWT
+    verificarToken($connection);
 
-    $sql = "SELECT id, idRoteiroCompras, idGrupoVisitas, avaliacaoViagem, comentario FROM avaliacoes";
-    $stmt = mysqli_prepare($connection, $sql);
+    $sql = "SELECT id,user_id, avaliacao_viagem, comentario 
+            FROM avaliacoes";
+    $result = mysqli_query($connection, $sql);
 
-    if (mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_bind_result($stmt, $id, $idRoteiroCompras, $idGrupoVisitas, $avaliacaoViagem, $comentario);
-
-        $avaliacoes = [];
-        while (mysqli_stmt_fetch($stmt)) {
-            $avaliacoes[] = new Avaliacao($id, $idRoteiroCompras, $idGrupoVisitas, $avaliacaoViagem, $comentario);
-        }
-
-        echo json_encode(["status" => "success", "data" => $avaliacoes]);
-    } else {
-        throw new Exception("Erro ao executar a query.");
+    if (!$result) {
+        throw new Exception("Erro ao executar a query: " . mysqli_error($connection));
     }
+
+    $avaliacoes = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $avaliacoes[] = $row;
+    }
+
+    echo json_encode($avaliacoes);
+
+    mysqli_close($connection);
+
 } catch (Exception $e) {
-    http_response_code(401);
+    http_response_code(400);
     echo json_encode(["error" => $e->getMessage()]);
 }
 ?>

@@ -19,9 +19,11 @@ try {
         throw new Exception("ID inválido.");
     }
 
-    $sql = "SELECT id, idRoteiroCompras, idGrupoVisitas, avaliacaoGuia, avaliacaoViagem, comentario FROM avaliacoes WHERE id = ?";
+    $sql = "SELECT id, user_id, avaliacao_viagem, comentario 
+            FROM avaliacoes 
+            WHERE id = ?";
     $stmt = mysqli_prepare($connection, $sql);
-    mysqli_stmt_bind_param($stmt, "iiiiis", $id);
+    mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
 
     $result = mysqli_stmt_get_result($stmt);
@@ -31,8 +33,12 @@ try {
         echo json_encode($avaliacao);
     } else {
         http_response_code(404);
-        echo json_encode(["error" => "Avaliacao não encontrado."]);
+        echo json_encode(["error" => "Avaliação não encontrada."]);
     }
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($connection);
+
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode(["error" => $e->getMessage()]);
