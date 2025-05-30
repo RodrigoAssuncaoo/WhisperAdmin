@@ -10,7 +10,6 @@ class Avaliacao implements JsonSerializable
     public function __construct($id, $user_id, $avaliacaoViagem, $comentario)
     {
         $this->id = $id;
-
         $this->user_id = $user_id;
         $this->avaliacaoViagem = $avaliacaoViagem;
         $this->comentario = $comentario;
@@ -25,7 +24,6 @@ class Avaliacao implements JsonSerializable
     {
         return $this->user_id;
     }
-
 
     public function getAvaliacaoViagem()
     {
