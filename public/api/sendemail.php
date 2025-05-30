@@ -1,47 +1,49 @@
-<?php 
+<?php
 
-
-require '../vendor/autoload.php';
-
+require_once '../../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function sendVerificationEmail($email, $token){
+function sendVerificationEmail($email, $token, $nome = '') {
     $mail = new PHPMailer(true);
     try {
-        // SEND EMAIL to verify the account
         $mail->isSMTP();
         $mail->Host = 'sandbox.smtp.mailtrap.io';
         $mail->SMTPAuth = true;
-        $mail->Username = '3029cdb38d2a07';
-        $mail->Password = '99bd3c7690fdaa';
+        $mail->Username = '3b4e0b89e5dac2';
+        $mail->Password = '38b9529462f0f5';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
-        //usamos isto para usar caracteres especiais
         $mail->CharSet = 'UTF-8';
         $mail->Encoding = 'base64';
 
-        $mail->setFrom('geral@whisper.pt', 'whisper');
+        $mail->setFrom('geral@whisper.pt', 'Whisper');
         $mail->addAddress($email);
-
         $mail->isHTML(true);
-        $mail->Subject = 'You registered on loginSystem';
-        $mail->Body = "<h1> Click the link to verify your email:</h1> <a href='http://WhisperAdmin.com/verify.php?token=$token'> Verify Email </a>";
+        $mail->Subject = 'Verificação de Email - Whisper';
+
+        // Prepara variáveis que o template irá usar
+        $firstName = explode(' ', trim($nome))[0];
+        $referralLink = "http://WhisperAdmin.com/verify.php?token=$token";
+        $referralCode = 'WHISPER15';
+        $companyName = 'Whisper';
+
+        // Inclui o template e captura o conteúdo HTML
+        ob_start();
+        include '../../../backend/email_template.php';
+        $mail->Body = ob_get_clean();
 
         $mail->send();
 
         return [
             'status' => 'success',
-            'data' => [
-                'message' => 'Email sent successfully',
-            ],
+            'data' => ['message' => 'Email enviado com sucesso'],
         ];
     } catch (Exception $e) {
         return [
-            'status' => 'FALSE',
+            'status' => 'error',
             'message' => $e->getMessage()
         ];
     }
 }
-
 ?>
