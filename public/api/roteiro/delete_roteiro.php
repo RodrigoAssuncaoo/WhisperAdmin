@@ -6,37 +6,44 @@ include_once '../../../backend/connection.php';
 include_once '../../../backend/auth.php';
 
 try {
-    // Permitir apenas DELETE (ou GET para testes, opcional)
-    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE' && $_SERVER['REQUEST_METHOD'] !== 'GET') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
         http_response_code(405);
         echo json_encode(["error" => "Método não permitido"]);
         exit;
     }
 
-    if (!$connection) {
-        throw new Exception("Erro na conexão com a base de dados.");
-    }
-
     verificarToken($connection);
 
-    // Obter o ID do roteiro
-    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    if (!$id) {
-        throw new Exception("ID do roteiro inválido ou não fornecido.");
+    // Lê o ID da query string
+    $id = $_GET['id'] ?? null;
+
+    if (!$id || !is_numeric($id)) {
+        throw new Exception("ID inválido.");
     }
 
-    // Eliminar o roteiro
-    $stmt = mysqli_prepare($connection, "DELETE FROM roteiros WHERE id = ?");
+    // Verifica se o roteiro existe
+    $checkSql = "SELECT id FROM roteiros WHERE id = ?";
+    $checkStmt = mysqli_prepare($connection, $checkSql);
+    mysqli_stmt_bind_param($checkStmt, "i", $id);
+    mysqli_stmt_execute($checkStmt);
+    $checkResult = mysqli_stmt_get_result($checkStmt);
+
+    if (mysqli_num_rows($checkResult) === 0) {
+        throw new Exception("Roteiro não encontrado.");
+    }
+
+    // Apagar o roteiro
+    $sql = "DELETE FROM roteiros WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $sql);
     mysqli_stmt_bind_param($stmt, "i", $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
-            echo json_encode(["status" => "success", "mensagem" => "Roteiro eliminado com sucesso."]);
-        } else {
-            echo json_encode(["status" => "warning", "mensagem" => "ID não encontrado ou já eliminado."]);
-        }
+        echo json_encode([
+            "status" => "success",
+            "mensagem" => "Roteiro eliminado com sucesso."
+        ]);
     } else {
-        throw new Exception("Erro ao eliminar o roteiro.");
+        throw new Exception("Erro ao eliminar roteiro: " . mysqli_stmt_error($stmt));
     }
 
     mysqli_stmt_close($stmt);
@@ -44,9 +51,6 @@ try {
 
 } catch (Exception $e) {
     http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "mensagem" => "Erro: " . $e->getMessage()
-    ]);
+    echo json_encode(["error" => $e->getMessage()]);
 }
 ?>

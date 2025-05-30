@@ -55,3 +55,4 @@ class Avaliacao implements JsonSerializable
             " | Comentário: " . $this->comentario;
     }
 }
+?>
