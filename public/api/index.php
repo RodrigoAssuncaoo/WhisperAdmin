@@ -7,8 +7,6 @@ try {
         throw new Exception('Método não permitido');
     }
 
-
-
     $result = array(
         'success' => true,
         'status' => 'success',

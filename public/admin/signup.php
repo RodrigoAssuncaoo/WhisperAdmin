@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $confirmPassword = trim($_POST['confirm-password']);
-    /*//----------------capcha google-------------------------------------------
+    //----------------capcha google-------------------------------------------
     // Verificar reCAPTCHA
     if (!isset($_POST['g-recaptcha-response'])) {
       throw new Exception("Por favor confirme que não é um robô.");
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //-----------------------------validacoes---------------------------------------------------------------
     if (!$captcha_success->success) {
       throw new Exception("Validação reCAPTCHA falhou. Tente novamente.");
-    }*/
+    }
 
     // Validação de campos obrigatórios
     if (empty($nome) || empty($contacto) || empty($email) || empty($password) || empty($confirmPassword)) {
