@@ -22,8 +22,8 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    
-    $stmt = $connection->prepare("SELECT id, nome, email, password, role FROM users WHERE email = ?");
+    // Preparando e executando a consulta ao banco de dados
+    $stmt = $connection->prepare("SELECT id, nome, email, password, role, contacto, created_at FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -34,15 +34,17 @@ try {
         exit;
     }
 
+    // Recuperando o resultado da consulta como array associativo
     $user = $result->fetch_assoc();
 
+    // Verificando a senha
     if (!password_verify($password, $user['password'])) {
         http_response_code(401);
         echo json_encode(["error" => "Credenciais inválidas."]);
         exit;
     }
 
-    // Gerar token JWT
+    // Gerar o token JWT
     $secretKey = "SUA_CHAVE_SECRETA"; // Substitua por uma constante segura ou carregue de um .env
     $payload = [
         "iss" => "seusite.com",
@@ -53,16 +55,33 @@ try {
             "id" => $user['id'],
             "nome" => $user['nome'],
             "email" => $user['email'],
-            "role" => $user['role'] 
-        ]
+            "role" => $user['role'],
+            "contacto" => $user['contacto'],
+            "created_at" => $user['created_at'],        
+            ]
     ];
 
     $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
+    // Criando o objeto User e passando os dados corretos
+    $userObject = new User(
+        $user['id'],
+        $user['role'],
+        $user['nome'],
+        $user['contacto'],
+        $user['email'],
+        $jwt, // Passando o token JWT para o objeto User
+        $user['password'],
+        $user['created_at'],
+    );
+
+    // Respondendo com sucesso
     http_response_code(200);
     echo json_encode([
-        "message" => "Login bem-sucedido.",
-        "token" => $jwt
+        "success" => true,
+        "token" => $jwt,
+        "user" => $userObject->jsonSerialize(), // Chamando o método jsonSerialize para enviar os dados do usuário
+        "message" => "Login bem-sucedido."
     ]);
 
 } catch (Exception $e) {

@@ -54,7 +54,13 @@ try {
         'status' => 'success',
         'data' => [
             'id' => $user->getId(),
-            'email' => $user->getEmail()
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'contacto' => $user->getContacto(),
+            'address' => $user->getAddress(),
+            'token' => $user->getToken(),
+            'created_at' => $user->getCreatedAt(),
+            'updated_at' => $user->getUpdatedAt(),
         ],
     );
 

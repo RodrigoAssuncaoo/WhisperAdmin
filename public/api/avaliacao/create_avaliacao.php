@@ -16,7 +16,7 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    // ✅ Autenticação e obtenção do user_id
+    // Autenticação e obtenção do user_id
     $user = verificarToken($connection);
     $user_id = $user->id ?? null; // <-- CORRIGIDO: era $user['id']
     
@@ -24,16 +24,16 @@ try {
         throw new Exception("Utilizador não autenticado.");
     }
 
-    // ✅ Apenas os campos usados
+    // Apenas os campos usados
     $avaliacao_viagem = isset($_POST['avaliacao_viagem']) ? (int)$_POST['avaliacao_viagem'] : null;
     $comentario = $_POST['comentario'] ?? null;
 
-    // ✅ Validação
+    // Validação
     if (is_null($avaliacao_viagem) || empty($comentario)) {
         throw new Exception("Dados inválidos ou incompletos.");
     }
 
-    // ✅ Query INSERT
+    // Query INSERT
     $sql = "INSERT INTO avaliacoes (user_id, avaliacao_viagem, comentario) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($connection, $sql);
 

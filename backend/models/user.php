@@ -2,90 +2,90 @@
 
 class User implements JsonSerializable
 {
-    private $id;
-    private $isAdmin;
-    private $nome;
-    private $contacto;
-    private $email;
-    private $token;
-    private $password;
-    private $created_at;
-    private $updated_at;
+    private int $id;
+    private int $role; // 1=Admin, 2=Guia, 3=Cliente
+    private string $nome;
+    private string $contacto;
+    private string $email;
+    private ?string $token;
+    private string $password;
+    private string $created_at;
 
-    public function __construct($id, $isAdmin, $nome, $contacto, $email, $token, $password, $created_at, $updated_at) {
+    public function __construct($id, $role, $nome, $contacto, $email, $token, $password, $created_at) {
         $this->id = $id;
-        $this->isAdmin = $isAdmin;
+        $this->role = $role ?? 3; // se null, define como cliente
         $this->nome = $nome;
         $this->contacto = $contacto;
         $this->email = $email;
         $this->token = $token;
         $this->password = $password;
         $this->created_at = $created_at;
-        $this->updated_at = $updated_at;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getIsAdmin()
+    public function getRole(): int
     {
-        return $this->isAdmin;
+        return $this->role;
     }
 
-    public function getNome()
+    public function getRoleName(): string
+    {
+        return match ($this->role) {
+            1 => 'Admin',
+            2 => 'Guia',
+            default => 'Cliente', // inclui 3 e null tratados como cliente
+        };
+    }
+
+    public function getNome(): string
     {
         return $this->nome;
     }
 
-    public function getContacto()
+    public function getContacto(): string
     {
         return $this->contacto;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getToken()
+    public function getToken(): ?string
     {
         return $this->token;
     }
 
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): string
     {
         return $this->created_at;
-    }
-
-    public function getUpdatedAt()
-    {
-        return $this->updated_at;
     }
 
     public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->id,
-            'isAdmin' => $this->isAdmin,
+            'role' => $this->role,
+            'roleName' => $this->getRoleName(),
             'nome' => $this->nome,
             'contacto' => $this->contacto,
             'email' => $this->email,
-            'token' => $this->token,
-            'password' => $this->password,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at
         ];
     }
 
-    public function toString()
+    public function toString(): string
     {
-        return "ID: {$this->id} | Admin: {$this->isAdmin} | Nome: {$this->nome} | Contacto: {$this->contacto} | Email: {$this->email} | Token: {$this->token} | Password: {$this->password} | Created At: {$this->created_at} | Updated At: {$this->updated_at}";
+        return "ID: {$this->id} | Role: {$this->getRoleName()} ({$this->role}) | Nome: {$this->nome} | Contacto: {$this->contacto} | Email: {$this->email} | Created At: {$this->created_at}";
     }
 }
