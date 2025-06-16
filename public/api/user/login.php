@@ -44,13 +44,8 @@ try {
         exit;
     }
 
-<<<<<<< HEAD
     // Gerar o token JWT
     $secretKey = "SUA_CHAVE_SECRETA"; // Substitua por uma constante segura ou carregue de um .env
-=======
-    // Gerar token JWT
-    $secretKey = "whisper"; // Substitua por uma constante segura ou carregue de um .env
->>>>>>> a9ed9835de70b494a8ed3fd6863e4b7fa458a624
     $payload = [
         "iss" => "seusite.com",
         "aud" => "seusite.com",
