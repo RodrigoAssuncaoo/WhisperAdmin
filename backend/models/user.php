@@ -7,7 +7,7 @@ class User implements JsonSerializable
     private string $nome;
     private string $contacto;
     private string $email;
-    private ?string $token;
+    private string $token;
     private string $password;
     private string $created_at;
 
