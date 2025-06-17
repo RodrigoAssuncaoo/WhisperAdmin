@@ -4,37 +4,32 @@ require_once '../../../vendor/autoload.php';
 include_once '../../../backend/db.php';
 include_once '../../../backend/auth.php';
 
-
 try {
-
     // Validação do token JWT
     verificarToken($pdo);
 
     $stmt = $pdo->prepare("
-        SELECT 
-            r.id,
-            r.nome,
-            r.id_tipo_roteiro AS id_tipo,
-            t.nome AS tipo,
-            r.picpath
+        SELECT r.id, r.nome, r.picPath, 
+               ROUND(AVG(a.avaliacao_roteiro), 2) AS media_score
         FROM roteiros r
-        JOIN tipo_roteiroS t ON r.id_tipo_roteiro = t.id
+        JOIN avaliacoes a ON r.id = a.id_roteiro
+        GROUP BY r.id, r.nome, r.picPath
+        HAVING media_score > 7
+        ORDER BY media_score DESC
     ");
     $stmt->execute();
 
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    http_response_code(200);
     echo json_encode([
         'success' => true,
-        'message' => 'Roteiros obtidos com sucesso',
+        'message' => 'Roteiros populares obtidos com sucesso',
         'data' => [
-            'roteiros' => $roteiros
+            'roteiros_populares' => $roteiros
         ]
     ]);
-    
+
 } catch (Exception $e) {
-    http_response_code(400);
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage()
