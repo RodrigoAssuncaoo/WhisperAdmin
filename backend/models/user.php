@@ -72,17 +72,19 @@ class User implements JsonSerializable
     }
 
     public function jsonSerialize(): mixed
-    {
-        return [
-            'id' => $this->id,
-            'role' => $this->role,
-            'roleName' => $this->getRoleName(),
-            'nome' => $this->nome,
-            'contacto' => $this->contacto,
-            'email' => $this->email,
-            'created_at' => $this->created_at
-        ];
-    }
+{
+    return [
+        'id' => $this->id,
+        'role' => $this->role,
+        'roleName' => $this->getRoleName(),
+        'nome' => $this->nome,
+        'contacto' => $this->contacto,
+        'email' => $this->email,
+        'created_at' => $this->created_at,
+        'token' => $this->token
+    ];
+}
+
 
     public function toString(): string
     {

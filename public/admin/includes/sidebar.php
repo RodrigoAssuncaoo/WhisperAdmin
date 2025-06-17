@@ -24,6 +24,14 @@
                     </a>
                 </li>
             </ul>
+        </li>
+        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="tables/roteirostable.php">
+                        <i class="bi bi-circle"></i><span>Routes Table</span>
+                    </a>
+                </li>
+            </ul>
         </li><!-- End Tables Nav -->
         <li class="nav-heading">Pages</li>
 
