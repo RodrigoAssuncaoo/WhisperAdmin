@@ -61,7 +61,7 @@ try {
     $role = 3;
 
     $stmt = $connection->prepare("INSERT INTO users (nome, contacto, email, password, role, token, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())");
-    $stmt->bind_param("ssssss", $nome, $contacto, $email, $hashedPassword, $role, $token);
+    $stmt->bind_param("ssssis", $nome, $contacto, $email, $hashedPassword, $role, $token);
 
     if ($stmt->execute()) {
         sendVerificationEmail($email, $token, $nome);
