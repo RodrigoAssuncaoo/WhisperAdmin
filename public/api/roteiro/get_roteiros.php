@@ -16,9 +16,12 @@ try {
             r.nome,
             r.id_tipo_roteiro AS id_tipo,
             t.nome AS tipo,
-            r.picpath
+            r.picpath,
+            ROUND(AVG(a.avaliacao_roteiro), 2) AS media_score
         FROM roteiros r
         JOIN tipo_roteiroS t ON r.id_tipo_roteiro = t.id
+        JOIN avaliacoes a ON r.id = a.id_roteiro
+        GROUP BY r.id, r.nome, r.picPath
     ");
     $stmt->execute();
 

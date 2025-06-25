@@ -2,28 +2,40 @@
 header("Content-Type: application/json");
 
 require_once '../../../vendor/autoload.php';
-include_once '../../../backend/connection.php';
+include_once '../../../backend/db.php';
 include_once '../../../backend/auth.php';
 
 try {
-    verificarToken($connection);
+    // ✅ Verifica o token JWT
+    verificarToken($pdo);
 
-    $sql = "SELECT id, nome, duracao, preco FROM tipo_roteiros";
-    $result = mysqli_query($connection, $sql);
+    // ✅ Consulta os dados da tabela tipo_roteiros
+    $stmt = $pdo->prepare("
+        SELECT 
+            id,
+            nome AS title,
+            picPath
+        FROM tipo_roteiros
+    ");
+    $stmt->execute();
 
-    if (!$result) {
-        throw new Exception("Erro ao buscar tipos de roteiro: " . mysqli_error($connection));
-    }
+    $tipos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $tipos = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $tipos[] = $row;
-    }
-
-    echo json_encode($tipos);
+    // ✅ Resposta JSON com formato compatível com a app
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Tipos de roteiro obtidos com sucesso',
+        'data' => [
+            'tipos_roteiros' => $tipos
+        ]
+    ]);
 
 } catch (Exception $e) {
     http_response_code(400);
-    echo json_encode(["error" => $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 }
 ?>

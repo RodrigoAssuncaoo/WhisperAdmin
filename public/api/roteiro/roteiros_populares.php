@@ -9,9 +9,15 @@ try {
     verificarToken($pdo);
 
     $stmt = $pdo->prepare("
-        SELECT r.id, r.nome, r.picPath, 
-               ROUND(AVG(a.avaliacao_roteiro), 2) AS media_score
+        SELECT 
+            r.id,
+            r.nome,
+            r.id_tipo_roteiro AS id_tipo,
+            t.nome AS tipo,
+            r.picpath,
+            ROUND(AVG(a.avaliacao_roteiro), 2) AS media_score
         FROM roteiros r
+        JOIN tipo_roteiroS t ON r.id_tipo_roteiro = t.id
         JOIN avaliacoes a ON r.id = a.id_roteiro
         GROUP BY r.id, r.nome, r.picPath
         HAVING media_score > 7
@@ -21,11 +27,12 @@ try {
 
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    http_response_code(200);
     echo json_encode([
         'success' => true,
-        'message' => 'Roteiros populares obtidos com sucesso',
+        'message' => 'Roteiros obtidos com sucesso',
         'data' => [
-            'roteiros_populares' => $roteiros
+            'roteiros' => $roteiros
         ]
     ]);
 
