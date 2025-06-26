@@ -2,17 +2,26 @@
 session_start();
 include 'includes/header.php';
 include 'includes/sidebar.php';
-include '../../backend/db.php';
+require_once '../../backend/db.php';
 
-// Contar utilizadores
-$stmt = $pdo->query("SELECT COUNT(*) FROM users");
-$quantidadeUsers = $stmt->fetchColumn();
+// Quantidade de utilizadores
+$quantidadeUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 
-$stmt = $pdo->query("SELECT COUNT(*) FROM avaliacoes WHERE avaliacao_roteiro > 5");
-$avaliacoesBoas = $stmt->fetchColumn();
+// Quantidade de roteiros
+$quantidadeRoteiros = $pdo->query("SELECT COUNT(*) FROM roteiros")->fetchColumn();
 
-$stmt = $pdo->query("SELECT COUNT(*) FROM roteiros");
-$quantidadeRoteiros = $stmt->fetchColumn();
+// Avaliações boas (>5)
+$avaliacoesBoas = $pdo->query("SELECT COUNT(*) FROM avaliacoes WHERE avaliacao_roteiro > 5")->fetchColumn();
+
+// Top 5 roteiros mais populares (mais comprados)
+$topRoteiros = $pdo->query("
+    SELECT r.nome, COUNT(rc.id) AS total_compras
+    FROM roteiro_compras rc
+    INNER JOIN roteiros r ON rc.id_roteiro = r.id
+    GROUP BY rc.id_roteiro
+    ORDER BY total_compras DESC
+    LIMIT 5
+")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <main id="main" class="main">
@@ -24,11 +33,11 @@ $quantidadeRoteiros = $stmt->fetchColumn();
         <li class="breadcrumb-item active">Dashboard</li>
       </ol>
     </nav>
-  </div><!-- End Page Title -->
+  </div>
 
   <section class="section dashboard">
     <div class="row">
-      <!-- Card 1 -->
+      <!-- Roteiros -->
       <div class="col-xxl-4 col-md-6">
         <div class="card info-card sales-card">
           <div class="card-body">
@@ -46,7 +55,7 @@ $quantidadeRoteiros = $stmt->fetchColumn();
         </div>
       </div>
 
-      <!-- Card 2 -->
+      <!-- Avaliações boas -->
       <div class="col-xxl-4 col-md-6">
         <div class="card info-card customers-card">
           <div class="card-body">
@@ -64,7 +73,7 @@ $quantidadeRoteiros = $stmt->fetchColumn();
         </div>
       </div>
 
-      <!-- Card 3 -->
+      <!-- Utilizadores -->
       <div class="col-xxl-4 col-xl-12">
         <div class="card info-card customers-card">
           <div class="card-body">
@@ -81,31 +90,30 @@ $quantidadeRoteiros = $stmt->fetchColumn();
         </div>
       </div>
 
-      <!-- Exemplo de gráfico -->
+      <!-- Tabela de roteiros mais populares -->
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Gráfico de Exemplo</h5>
-            <div id="graficoDashboard"></div>
-            <script>
-              document.addEventListener("DOMContentLoaded", () => {
-                new ApexCharts(document.querySelector("#graficoDashboard"), {
-                  series: [{
-                    name: "Utilizadores",
-                    data: [10, 20, 15, 30, 25, 35, 40]
-                  }],
-                  chart: {
-                    height: 350,
-                    type: 'line',
-                    toolbar: { show: false }
-                  },
-                  stroke: { curve: 'smooth' },
-                  xaxis: {
-                    categories: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"]
-                  }
-                }).render();
-              });
-            </script>
+            <h5 class="card-title">Top 5 Roteiros Mais Populares</h5>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Roteiro</th>
+                  <th>Total de Compras</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($topRoteiros as $roteiro): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($roteiro['nome']) ?></td>
+                    <td><?= $roteiro['total_compras'] ?></td>
+                  </tr>
+                <?php endforeach; ?>
+                <?php if (empty($topRoteiros)): ?>
+                  <tr><td colspan="2">Nenhum dado encontrado.</td></tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
