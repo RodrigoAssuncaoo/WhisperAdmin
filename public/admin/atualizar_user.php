@@ -57,6 +57,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    header("Location: tables/userstable.php?erro=" . urlencode($e->getMessage()));
+    header("Location: tables/userstable.php?erro=Erro ao atualizar o utilizador: ");
     exit;
 }

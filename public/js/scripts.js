@@ -1,179 +1,122 @@
-/*!
-* Start Bootstrap - Creative v7.0.7 (https://startbootstrap.com/theme/creative)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-creative/blob/master/LICENSE)
-*/
-//
-// Scripts
-// 
-
-window.addEventListener('DOMContentLoaded', event => {
-
-    // Navbar shrink function
-    var navbarShrink = function () {
-        const navbarCollapsible = document.body.querySelector('#mainNav');
-        if (!navbarCollapsible) {
-            return;
-        }
-        if (window.scrollY === 0) {
-            navbarCollapsible.classList.remove('navbar-shrink')
-        } else {
-            navbarCollapsible.classList.add('navbar-shrink')
-        }
-
-    };
-
-    // Shrink the navbar 
-    navbarShrink();
-
-    // Shrink the navbar when page is scrolled
-    document.addEventListener('scroll', navbarShrink);
-
-    // Activate Bootstrap scrollspy on the main nav element
-    const mainNav = document.body.querySelector('#mainNav');
-    if (mainNav) {
-        new bootstrap.ScrollSpy(document.body, {
-            target: '#mainNav',
-            rootMargin: '0px 0px -40%',
-        });
-    };
-
-    // Collapse responsive navbar when toggler is visible
-    const navbarToggler = document.body.querySelector('.navbar-toggler');
-    const responsiveNavItems = [].slice.call(
-        document.querySelectorAll('#navbarResponsive .nav-link')
-    );
-    responsiveNavItems.map(function (responsiveNavItem) {
-        responsiveNavItem.addEventListener('click', () => {
-            if (window.getComputedStyle(navbarToggler).display !== 'none') {
-                navbarToggler.click();
-            }
-        });
-    });
-
-    // Activate SimpleLightbox plugin for portfolio items
-    new SimpleLightbox({
-        elements: '#portfolio a.portfolio-box'
-    });
-    
-    event => {
-
-        // Navbar shrink function
-        var navbarShrink = function () {
-            const navbarCollapsible = document.body.querySelector('#mainNav');
-            if (!navbarCollapsible) {
-                return;
-            }
-            if (window.scrollY === 0) {
-                navbarCollapsible.classList.remove('navbar-shrink')
-            } else {
-                navbarCollapsible.classList.add('navbar-shrink')
-            }
-        };
-    
-        // Shrink the navbar 
-        navbarShrink();
-    
-        // Shrink the navbar when page is scrolled
-        document.addEventListener('scroll', navbarShrink);
-    
-        // Change navbar text color based on section background
-        document.addEventListener("scroll", function () {
-            const header = document.querySelector("#mainNav");
-            const sections = document.querySelectorAll("section, header");
-            let isDarkBackground = false;
-    
-            sections.forEach((section) => {
-                const rect = section.getBoundingClientRect();
-                if (
-                    rect.top <= 60 && // The top of the header
-                    rect.bottom >= 0  // The bottom of the section
-                ) {
-                    const bgColor = window.getComputedStyle(section).backgroundColor;
-                    isDarkBackground = isDark(bgColor);
-                }
-            });
-    
-            header.classList.toggle("dark-header", isDarkBackground);
-            header.classList.toggle("light-header", !isDarkBackground);
-        });
-    
-        function isDark(rgb) {
-            // Extract RGB values
-            const match = rgb.match(/\d+/g);
-            if (!match) return false;
-    
-            const [r, g, b] = match.map(Number);
-            // Relative brightness algorithm
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            return brightness < 128; // Defines the threshold between light and dark
-        }
-    
-        // Activate Bootstrap scrollspy on the main nav element
-        const mainNav = document.body.querySelector('#mainNav');
-        if (mainNav) {
-            new bootstrap.ScrollSpy(document.body, {
-                target: '#mainNav',
-                rootMargin: '0px 0px -40%',
-            });
-        };
-    
-        // Collapse responsive navbar when toggler is visible
-        const navbarToggler = document.body.querySelector('.navbar-toggler');
-        const responsiveNavItems = [].slice.call(
-            document.querySelectorAll('#navbarResponsive .nav-link')
-        );
-        responsiveNavItems.map(function (responsiveNavItem) {
-            responsiveNavItem.addEventListener('click', () => {
-                if (window.getComputedStyle(navbarToggler).display !== 'none') {
-                    navbarToggler.click();
-                }
-            });
-        });
-    
-        // Activate SimpleLightbox plugin for portfolio items
-        new SimpleLightbox({
-            elements: '#portfolio a.portfolio-box'
-        });
-    }
-
+document.addEventListener('DOMContentLoaded', () => {
+  aplicarFiltroGuardado();
+  configurarBotoesFiltro();
+  configurarTogglesFormulario();
 });
 
-// Enable Bootstrap's scrollspy
-document.addEventListener('DOMContentLoaded', function () {
-    const mainNav = document.querySelector('#mainNav');
-    if (mainNav) {
-        new bootstrap.ScrollSpy(document.body, {
-            target: '#mainNav',
-            offset: 74,
-        });
-    }
-});
+/**
+ * Aplica o filtro guardado no localStorage (se existir)
+ */
+function aplicarFiltroGuardado() {
+  const filtroGuardado = localStorage.getItem('filtroRole') || 'todos';
+  filtrarTabelaPorRole(filtroGuardado);
+}
 
-// Smooth scrolling using jQuery easing
-$(document).ready(function () {
-    $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function () {
-        if (
-            location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') &&
-            location.hostname == this.hostname
-        ) {
-            var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-            if (target.length) {
-                $('html, body').animate(
-                    {
-                        scrollTop: target.offset().top - 72,
-                    },
-                    1000,
-                    'easeInOutExpo'
-                );
-                return false;
-            }
-        }
+/**
+ * Associa eventos de clique aos botões de filtro
+ */
+function configurarBotoesFiltro() {
+  document.querySelectorAll('.filtro-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const role = btn.dataset.role;
+      filtrarTabelaPorRole(role);
     });
+  });
+}
 
-    // Closes responsive menu when a scroll trigger link is clicked
-    $('.js-scroll-trigger').click(function () {
-        $('.navbar-collapse').collapse('hide');
+/**
+ * Mostra/esconde o formulário de adicionar (se existir)
+ */
+function configurarTogglesFormulario() {
+  const toggleBtn = document.getElementById('toggle-form-btn');
+  const form = document.getElementById('add-user-form');
+
+  if (toggleBtn && form) {
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = form.style.display === 'none' || form.style.display === '';
+      if (isHidden) {
+        form.style.display = 'block';
+        form.classList.remove('animate__fadeOutUp');
+        form.classList.add('animate__fadeInDown');
+      } else {
+        form.classList.remove('animate__fadeInDown');
+        form.classList.add('animate__fadeOutUp');
+        setTimeout(() => form.style.display = 'none', 500);
+      }
     });
-});
+  }
+}
+
+/**
+ * Mostra o formulário de edição para um ID específico
+ */
+function mostrarEditar(id) {
+  const row = document.getElementById(`editar-${id}`);
+  if (row) row.style.display = 'table-row';
+}
+
+/**
+ * Esconde o formulário de edição para um ID específico
+ */
+function fecharEditar(id) {
+  const row = document.getElementById(`editar-${id}`);
+  if (row) row.style.display = 'none';
+}
+
+/**
+ * Valida o formulário de adição (nome, email, contacto, password, role)
+ */
+function validarFormulario() {
+  const nome = document.getElementById("nome")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const contacto = document.getElementById("contacto")?.value.trim();
+  const password = document.getElementById("password")?.value.trim();
+  const role = document.getElementById("role")?.value;
+
+  if (!nome || !email || !contacto || !password || !role) {
+    alert("Todos os campos são obrigatórios.");
+    return false;
+  }
+
+  if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
+    alert("Nome inválido.");
+    return false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Email inválido.");
+    return false;
+  }
+
+  if (!/^\d{9}$/.test(contacto)) {
+    alert("Contacto inválido.");
+    return false;
+  }
+
+  if (password.length < 6) {
+    alert("Password fraca.");
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Filtra as linhas de utilizadores ou entradas por role
+ */
+function filtrarTabelaPorRole(role) {
+  const linhas = document.querySelectorAll('.user-row');
+  const botoes = document.querySelectorAll('.filtro-btn');
+
+  linhas.forEach(l => {
+    const r = l.dataset.role?.toLowerCase();
+    l.style.display = (role === 'todos' || r === role.toLowerCase()) ? '' : 'none';
+  });
+
+  botoes.forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.role === role.toLowerCase()) btn.classList.add('active');
+  });
+
+  localStorage.setItem('filtroRole', role);
+}

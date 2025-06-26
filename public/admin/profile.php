@@ -1,78 +1,77 @@
 <?php
 session_start();
-include '../../backend/db.php';
-include 'includes/header.php';
-include 'includes/sidebar.php';
+require_once '../../backend/db.php';
+require_once 'includes/header.php';
+require_once 'includes/sidebar.php';
 
-if (!isset($_SESSION['user'])) {
+// Verifica se o utilizador está autenticado
+if (!isset($_SESSION['user']['id'])) {
     header("Location: /login.php");
     exit;
 }
-// Obter dados atuais do utilizador
+
 $userId = $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obter dados do POST
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $contact = $_POST['contact'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $contact = trim($_POST['contact'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    // Verifica se foi fornecida nova password
-    if (!empty($password)) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "UPDATE users SET username = ?, email = ?, contact = ?, password = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $username, $email, $contact, $hashedPassword, $userId);
-    } else {
-        // Atualiza sem mudar a password
-        $sql = "UPDATE users SET username = ?, email = ?, contact = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $username, $email, $contact, $userId);
-    }
+    try {
+        if (empty($username) || empty($email)) {
+            throw new Exception("Nome de utilizador e email são obrigatórios.");
+        }
 
-    if ($stmt->execute()) {
-        // Atualiza os dados na sessão
+        if (!empty($password)) {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, contact = ?, password = ? WHERE id = ?");
+            $stmt->execute([$username, $email, $contact, $hashedPassword, $userId]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, contact = ? WHERE id = ?");
+            $stmt->execute([$username, $email, $contact, $userId]);
+        }
+
+        // Atualiza sessão
         $_SESSION['user']['username'] = $username;
         $_SESSION['user']['email'] = $email;
         $_SESSION['user']['contact'] = $contact;
-        $success = "Perfil atualizado com sucesso!";
-    } else {
-        $error = "Erro ao atualizar perfil.";
-    }
 
-    $stmt->close();
+        $success = "Perfil atualizado com sucesso!";
+    } catch (Exception $e) {
+        $error = "Erro ao atualizar perfil: " . $e->getMessage();
+    }
 }
 ?>
 
 <main id="main" class="main">
   <div class="container">
-    <h1 class="h3 mb-4 text-gray-800">User Profile</h1>
+    <h1 class="h3 mb-4 text-gray-800">Perfil do Utilizador</h1>
 
-    <?php if (isset($success)) { ?>
-      <div class="alert alert-success"><?= $success ?></div>
-    <?php } elseif (isset($error)) { ?>
-      <div class="alert alert-danger"><?= $error ?></div>
-    <?php } ?>
+    <?php if (isset($success)): ?>
+      <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+    <?php elseif (isset($error)): ?>
+      <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
 
     <form method="POST">
       <div class="mb-3">
         <label>Nome de Utilizador</label>
-        <input type="text" name="username" value="<?php echo $_SESSION['user']['username'] ?? ''; ?>" class="form-control" required>
+        <input type="text" name="username" value="<?= htmlspecialchars($_SESSION['user']['username'] ?? '') ?>" class="form-control" required>
       </div>
       <div class="mb-3">
         <label>Email</label>
-        <input type="email" name="email" value="<?php echo $_SESSION['user']['email'] ?? ''; ?>" class="form-control" required>
+        <input type="email" name="email" value="<?= htmlspecialchars($_SESSION['user']['email'] ?? '') ?>" class="form-control" required>
       </div>
       <div class="mb-3">
         <label>Contacto</label>
-        <input type="text" name="contact" value="<?php echo $_SESSION['user']['contact'] ?? ''; ?>" class="form-control">
+        <input type="text" name="contact" value="<?= htmlspecialchars($_SESSION['user']['contact'] ?? '') ?>" class="form-control">
       </div>
       <div class="mb-3">
-        <label>Senha (deixe em branco para manter a atual)</label>
+        <label>Nova Senha (deixe em branco para manter)</label>
         <input type="password" name="password" class="form-control">
       </div>
-      <button class="btn btn-primary">Guardar</button>
+      <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
   </div>
 </main>

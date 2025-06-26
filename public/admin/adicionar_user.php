@@ -1,11 +1,13 @@
 <?php
 require_once('../../backend/db.php');
+session_start(); // Inicia a sessão para mensagens de erro e sucesso
 
 try {
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
         throw new Exception("Acesso inválido.");
     }
 
+    // Validação dos campos
     $nome = trim($_POST['nome'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $contacto = trim($_POST['contacto'] ?? '');
@@ -36,6 +38,7 @@ try {
         throw new Exception("Função inválida.");
     }
 
+    // Verifica se o email já existe
     $stmt = $pdo->prepare("SELECT id FROM users WHERE LOWER(email) = LOWER(:email)");
     $stmt->execute(['email' => $email]);
 
@@ -43,8 +46,10 @@ try {
         throw new Exception("Email já existe.");
     }
 
+    // Criptografa a palavra-passe
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
+    // Insere o novo utilizador na base de dados
     $stmt = $pdo->prepare("INSERT INTO users (nome, email, contacto, password, role) VALUES (:nome, :email, :contacto, :password, :role)");
     $stmt->execute([
         'nome' => $nome,
@@ -54,12 +59,15 @@ try {
         'role' => $role
     ]);
 
-    // 🔁 Redirecionar para a tabela após adicionar
-    header("Location: tables/userstable.php?sucesso=1");
+    // Define a mensagem de sucesso na sessão
+    $_SESSION['message'] = 'Utilizador criado com sucesso.';
+    header("Location: tables/userstable.php?sucesso=Utilizador adicionado com sucesso");
     exit;
 
 } catch (Exception $e) {
-    // Podes redirecionar com o erro também se quiseres mostrar
-    header("Location: tables/userstable.php?erro=" . urlencode($e->getMessage()));
+    // Define a mensagem de erro na sessão
+    $_SESSION['error'] = $e->getMessage();
+    header("Location: tables/userstable.php?erro=Erro ao adicionar o utilizador");
     exit;
 }
+?>
