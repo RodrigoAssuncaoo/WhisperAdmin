@@ -24,11 +24,12 @@
                 <button class="btn btn-outline-warning btn-sm filtro-btn" data-role="guia" onclick="filtrarRole('Guia')">Guia</button>
                 <button class="btn btn-outline-info btn-sm filtro-btn" data-role="cliente" onclick="filtrarRole('Cliente')">Cliente</button>
               </div>
-              <button class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                      style="width: 38px; height: 38px;" onclick="toggleForm()" title="Adicionar Utilizador">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
+                <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"
+                  onclick="toggleForm()" title="Adicionar Utilizador">
+                  <i></i> Adicionar Utilizador
+                </button>
+
+              </div>
 
             <?php if (isset($_GET['erro'])): ?>
               <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>

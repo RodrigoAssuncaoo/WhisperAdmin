@@ -13,12 +13,14 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Lista de Roteiros</h5>
-
+                    <a href="../exportar_roteiros.php" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </a>
                         <!-- Botão Adicionar -->
                         <div class="mb-3 d-flex justify-content-end">
-                            <button class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 38px; height: 38px;" onclick="toggleForm()" title="Adicionar Roteiro">
-                                <i class="fas fa-plus"></i>
+                            <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"
+                                style="height: 38px; padding-left: 10px; padding-right: 10px;" onclick="toggleForm()" title="Adicionar Roteiro">
+                                <i></i> Adicionar Roteiro
                             </button>
                         </div>
 
@@ -43,6 +45,24 @@
                                 </div>
                                 <div class="col-md-4 d-flex align-items-end">
                                     <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                                </div>
+
+                                <!-- NOVO CAMPO: Pontos turísticos -->
+                                <div class="col-md-12 mt-3">
+                                    <label class="form-label">Pontos do Roteiro</label>
+                                    <select name="pontos[]" class="form-select" multiple required>
+                                        <?php
+                                        try {
+                                            $pontos = $pdo->query("SELECT id, nome FROM pontos ORDER BY nome ASC")->fetchAll();
+                                            foreach ($pontos as $ponto) {
+                                                echo "<option value='{$ponto['id']}'>" . htmlspecialchars($ponto['nome']) . "</option>";
+                                            }
+                                        } catch (PDOException $e) {
+                                            echo "<option disabled>Erro ao carregar pontos</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    <small class="text-muted">Seleciona vários com Ctrl (Windows) ou Cmd (Mac).</small>
                                 </div>
                             </div>
                         </form>

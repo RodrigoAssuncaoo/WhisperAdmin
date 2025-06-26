@@ -1,66 +1,77 @@
 <?php
-// Sidebar
-// This file contains the HTML code for the sidebar navigation menu.
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
+
 <aside id="sidebar" class="sidebar">
+  <ul class="sidebar-nav" id="sidebar-nav">
 
-    <ul class="sidebar-nav" id="sidebar-nav">
+    <!-- Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link <?= $currentPage === 'index.php' ? '' : 'collapsed' ?>" href="/admin/index.php">
+            <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+        </a>
+    </li>
 
-        <li class="nav-item">
-            <a class="nav-link " href="index.php">
-                <i class="bi bi-grid"></i>
-                <span>Dashboard</span>
+    <!-- Tabelas -->
+    <li class="nav-item">
+        <a class="nav-link <?= in_array($currentPage, ['userstable.php', 'roteirostable.php', 'pontostable.php']) ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#tables-nav">
+            <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+            <ul id="tables-nav" class="nav-content collapse <?= in_array($currentPage, ['userstable.php', 'roteirostable.php', 'pontostable.php']) ? 'show' : '' ?>" data-bs-parent="#sidebar-nav">
+    <li>
+        <a href="/admin/tables/userstable.php" class="<?= $currentPage === 'userstable.php' ? 'active' : '' ?>">
+            <i class="bi bi-circle"></i><span>Users Table</span>
+        </a>
+    </li>
+        <li>
+            <a href="/admin/tables/roteirostable.php" class="<?= $currentPage === 'roteirostable.php' ? 'active' : '' ?>">
+                <i class="bi bi-circle"></i><span>Routes Table</span>
             </a>
-        </li><!-- End Dashboard Nav -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="tables/userstable.php">
-                        <i class="bi bi-circle"></i><span>Users Table</span>
-                    </a>
-                </li>
-            </ul>
         </li>
-        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="tables/roteirostable.php">
-                        <i class="bi bi-circle"></i><span>Routes Table</span>
-                    </a>
-                </li>
-            </ul>
-        </li><!-- End Tables Nav -->
-        <li class="nav-heading">Pages</li>
-
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="profile.php">
-                <i class="bi bi-person"></i>
-                <span>Profile</span>
+        <li>
+        <a href="/admin/tables/avaliacoestable.php" class="<?= $currentPage === 'avaliacoestable.php' ? 'active' : '' ?>">
+            <i class="bi bi-circle"></i><span>Avaliations Table</span>
             </a>
-        </li><!-- End Profile Page Nav -->
-
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="signup.php">
-                <i class="bi bi-card-list"></i>
-                <span>Sign Up</span>
+        </li>
+        <li>
+        <a href="/admin/tables/pontostable.php" class="<?= $currentPage === 'pontostable.php' ? 'active' : '' ?>">
+            <i class="bi bi-circle"></i><span>Points Table</span>
             </a>
-        </li><!-- End Sign Up Page Nav -->
+        </li>
+        </ul>
+    </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="login.php">
-                <i class="bi bi-box-arrow-in-right"></i>
-                <span>Login</span>
-            </a>
-        </li><!-- End Login Page Nav -->
+    <!-- Páginas -->
+    <li class="nav-heading">Pages</li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="pages-blank.php">
-                <i class="bi bi-file-earmark"></i>
-                <span>Blank</span>
-            </a>
-        </li><!-- End Blank Page Nav -->
-    </ul>
-</aside><!-- End Sidebar-->
+    <li class="nav-item">
+        <a class="nav-link <?= $currentPage === 'profile.php' ? '' : 'collapsed' ?>" href="/admin/profile.php">
+            <i class="bi bi-person"></i>
+        <span>Profile</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link <?= $currentPage === 'signup.php' ? '' : 'collapsed' ?>" href="/admin/signup.php">
+            <i class="bi bi-card-list"></i>
+            <span>Sign Up</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link <?= $currentPage === 'login.php' ? '' : 'collapsed' ?>" href="/admin/login.php">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Login</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link <?= $currentPage === 'pages-blank.php' ? '' : 'collapsed' ?>" href="/admin/pages-blank.php">
+            <i class="bi bi-file-earmark"></i>
+        <span>Blank</span>
+        </a>
+    </li>
+
+</ul>
+</aside>

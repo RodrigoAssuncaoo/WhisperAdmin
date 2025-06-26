@@ -1,5 +1,6 @@
 <?php
 require_once('../../backend/db.php');
+session_start();
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,6 +12,11 @@ try {
     }
 
     $id = (int) $_POST['id'];
+
+    // Impedir que o utilizador apague a si próprio
+    if ($_SESSION['user']['id'] == $id) {
+        throw new Exception("Não podes eliminar a tua própria conta.");
+    }
 
     // Verificar se o utilizador existe antes de apagar
     $verifica = $pdo->prepare("SELECT id FROM users WHERE id = :id");
