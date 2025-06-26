@@ -42,36 +42,5 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </ul>
     </li>
 
-    <!-- Páginas -->
-    <li class="nav-heading">Pages</li>
-
-    <li class="nav-item">
-        <a class="nav-link <?= $currentPage === 'profile.php' ? '' : 'collapsed' ?>" href="/admin/profile.php">
-            <i class="bi bi-person"></i>
-        <span>Profile</span>
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link <?= $currentPage === 'signup.php' ? '' : 'collapsed' ?>" href="/admin/signup.php">
-            <i class="bi bi-card-list"></i>
-            <span>Sign Up</span>
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link <?= $currentPage === 'login.php' ? '' : 'collapsed' ?>" href="/admin/login.php">
-            <i class="bi bi-box-arrow-in-right"></i>
-            <span>Login</span>
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link <?= $currentPage === 'pages-blank.php' ? '' : 'collapsed' ?>" href="/admin/pages-blank.php">
-            <i class="bi bi-file-earmark"></i>
-        <span>Blank</span>
-        </a>
-    </li>
-
 </ul>
 </aside>
