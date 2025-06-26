@@ -75,7 +75,6 @@
                                                 </form>
                                             </td>
                                         </tr>
-
                                         <!-- Formulário edição -->
                                         <tr id="editar-<?= $roteiro['id'] ?>" style="display: none;">
                                             <td colspan="4">
