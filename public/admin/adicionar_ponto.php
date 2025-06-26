@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
             // header("Location: tables/pontostable.php?sucesso=Ponto adicionado com sucesso.");
     } catch (PDOException $e) {
-    header("Location: tables/pontosstable.php?erro=" . urlencode($e->getMessage()));
+    header("Location: tables/pontostable.php?erro=" . urlencode($e->getMessage()));
     }
 }
 ?>

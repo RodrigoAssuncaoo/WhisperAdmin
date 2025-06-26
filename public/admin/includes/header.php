@@ -41,7 +41,7 @@ $roleNome = $roles[$roleInt] ?? 'Desconhecido';
   <header id="header" class="header fixed-top d-flex align-items-center justify-content-between px-3">
     <div class="logo-toggle-wrapper">
       <i class="bi bi-list toggle-sidebar-btn fs-4" style="cursor: pointer;"></i>
-      <a href="index.php" class="logo d-flex align-items-center">
+        <a class="nav-link <?= $currentPage === 'index.php' ? '' : 'collapsed' ?>" href="/admin/index.php">
         <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Whisper" class="logo-img">
       </a>
     </div>
@@ -76,3 +76,8 @@ $roleNome = $roles[$roleInt] ?? 'Desconhecido';
       </ul>
     </nav>
   </header>
+
+  <!-- Restante conteúdo da página aqui -->
+
+</body>
+</html>
