@@ -171,4 +171,5 @@ function fecharEditar(id) {
 }
 </script>
 
+<?php include '../includes/script.php'; ?>
 <?php include '../includes/footer.php'; ?>
