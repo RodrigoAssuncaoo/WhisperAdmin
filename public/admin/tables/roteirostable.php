@@ -13,7 +13,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Lista de Roteiros</h5>
-
+                    <a href="../exportar_roteiros.php" target="_blank" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </a>
                         <!-- Botão Adicionar -->
                         <div class="mb-3 d-flex justify-content-end">
                             <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"

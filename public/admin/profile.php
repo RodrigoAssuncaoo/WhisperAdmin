@@ -13,29 +13,29 @@ if (!isset($_SESSION['user']['id'])) {
 $userId = $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $nome = trim($_POST['nome'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $contact = trim($_POST['contact'] ?? '');
+    $contacto = trim($_POST['contacto'] ?? '');
     $password = $_POST['password'] ?? '';
 
     try {
-        if (empty($username) || empty($email)) {
-            throw new Exception("Nome de utilizador e email são obrigatórios.");
+        if (empty($nome) || empty($email)) {
+            throw new Exception("Nome e email são obrigatórios.");
         }
 
         if (!empty($password)) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, contact = ?, password = ? WHERE id = ?");
-            $stmt->execute([$username, $email, $contact, $hashedPassword, $userId]);
+            $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ?, contacto = ?, password = ? WHERE id = ?");
+            $stmt->execute([$nome, $email, $contacto, $hashedPassword, $userId]);
         } else {
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, contact = ? WHERE id = ?");
-            $stmt->execute([$username, $email, $contact, $userId]);
+            $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ?, contacto = ? WHERE id = ?");
+            $stmt->execute([$nome, $email, $contacto, $userId]);
         }
 
-        // Atualiza sessão
-        $_SESSION['user']['username'] = $username;
+        // Atualiza os dados da sessão
+        $_SESSION['user']['nome'] = $nome;
         $_SESSION['user']['email'] = $email;
-        $_SESSION['user']['contact'] = $contact;
+        $_SESSION['user']['contacto'] = $contacto;
 
         $success = "Perfil atualizado com sucesso!";
     } catch (Exception $e) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
       <div class="mb-3">
         <label>Nome de Utilizador</label>
-        <input type="text" name="username" value="<?= htmlspecialchars($_SESSION['user']['username'] ?? '') ?>" class="form-control" required>
+        <input type="text" name="nome" value="<?= htmlspecialchars($_SESSION['user']['nome'] ?? '') ?>" class="form-control" required>
       </div>
       <div class="mb-3">
         <label>Email</label>
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <div class="mb-3">
         <label>Contacto</label>
-        <input type="text" name="contact" value="<?= htmlspecialchars($_SESSION['user']['contact'] ?? '') ?>" class="form-control">
+        <input type="text" name="contacto" value="<?= htmlspecialchars($_SESSION['user']['contacto'] ?? '') ?>" class="form-control">
       </div>
       <div class="mb-3">
         <label>Nova Senha (deixe em branco para manter)</label>
