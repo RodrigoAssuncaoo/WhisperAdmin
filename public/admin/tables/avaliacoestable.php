@@ -30,7 +30,7 @@
                         </div>
 
                         <!-- Formulário de Adicionar Avaliação -->
-                        <form id="add-avaliacao-form" class="border rounded p-3 mb-4 bg-light" method="POST" action="adicionar_avaliacao.php" style="display: none;">
+                        <form id="add-avaliacao-form" class="border rounded p-3 mb-4 bg-light" method="POST" action="../adicionar_avaliacao.php" style="display: none;">
                             <div class="row g-2">
                                 <!-- Campo para selecionar o utilizador -->
                                 <div class="col-md-4">
