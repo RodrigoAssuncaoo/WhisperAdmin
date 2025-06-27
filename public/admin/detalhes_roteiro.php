@@ -32,9 +32,6 @@ $pontos = $stmtPontos->fetchAll();
 
                         <p><strong>Tipo:</strong> <?= htmlspecialchars($roteiro['tipo_nome']) ?></p>
 
-                        <!-- Caminho da imagem baseado no ID -->
-                        <img src="assets/img/roteiros/<?= urlencode(htmlspecialchars($roteiro['id']) . '.jpg') ?>" class="img-fluid mb-4" style="max-height: 400px; object-fit: cover;">
-
                         <h5>Pontos do Roteiro:</h5>
                         <ul class="list-group">
                             <?php foreach ($pontos as $p): ?>

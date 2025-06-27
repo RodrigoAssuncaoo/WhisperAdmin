@@ -85,12 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="password" name="password" class="form-control" id="password" required>
         </div>
 
-        <!-- CAPTCHA comentado -->
-        <!--
+        
         <div class="mb-3">
-          <div class="g-recaptcha" data-sitekey="CHAVE_DO_SITE"></div>
+          <div class="g-recaptcha" data-sitekey="6Lc_Yz0rAAAAAM_ZttifOn4acP3yES6dJhi_bO-z"></div>
         </div>
-        -->
+        
 
         <div class="d-grid">
           <button type="submit" class="btn btn-primary">Entrar</button>
@@ -103,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 
   <!-- Scripts -->
-  <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script>
     function validarFormulario() {
       const email = document.getElementById('email').value.trim();

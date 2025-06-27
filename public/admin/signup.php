@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
               <div class="d-flex justify-content-center py-4">
                 <a href="/" class="logo d-flex align-items-center w-auto">
-                  <img src="/assets/img/logo.png" alt="Logo Whisper">
+                  <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Logo Whisper">
                   <span class="d-none d-lg-block">Whisper</span>
                 </a>
               </div>

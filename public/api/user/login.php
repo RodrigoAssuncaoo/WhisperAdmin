@@ -79,7 +79,6 @@ try {
     http_response_code(200);
     echo json_encode([
         "success" => true,
-        "token" => $jwt,
         "user" => $userObject->jsonSerialize(), // Chamando o método jsonSerialize para enviar os dados do usuário
         "message" => "Login bem-sucedido."
     ]);
