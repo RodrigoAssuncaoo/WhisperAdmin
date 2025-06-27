@@ -3,7 +3,7 @@ require_once '../../backend/db.php';
 include 'includes/header.php'; 
 include 'includes/sidebar.php'; 
 $id = $_GET['id'];
-
+try{
 $stmt = $pdo->prepare("SELECT * FROM roteiros WHERE id = ?");
 $stmt->execute([$id]);
 $roteiro = $stmt->fetch();
@@ -18,11 +18,10 @@ $pontosAssociados = array_column($stmtAssoc->fetchAll(), 'id_ponto');
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome = $_POST['nome'];
     $id_tipo = $_POST['id_tipo_roteiro'];
-    $picPath = $_POST['picPath'];
     $novosPontos = $_POST['pontos'];
 
-    $stmt = $pdo->prepare("UPDATE roteiros SET nome = ?, id_tipo_roteiro = ?, picPath = ? WHERE id = ?");
-    $stmt->execute([$nome, $id_tipo, $picPath, $id]);
+    $stmt = $pdo->prepare("UPDATE roteiros SET nome = ?, id_tipo_roteiro = ? WHERE id = ?");
+    $stmt->execute([$nome, $id_tipo, $id]);
 
     $pdo->prepare("DELETE FROM roteiro_pontos WHERE id_roteiro = ?")->execute([$id]);
 
@@ -32,6 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     header("Location: tables/roteirostable.php?sucesso=Roteiro atualizado com sucesso!");
+exit;
+}
+} catch (PDOException $e) {
+    header("Location: tables/roteirostable.php?erro=" . urlencode($e->getMessage()));
     exit;
 }
 ?>
@@ -56,10 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="col-md-4">
                                 <label class="form-label">ID Tipo Roteiro</label>
                                 <input type="number" name="id_tipo_roteiro" class="form-control" value="<?= $roteiro['id_tipo_roteiro'] ?>" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Imagem (picPath)</label>
-                                <input type="text" name="picPath" class="form-control" value="<?= htmlspecialchars($roteiro['picPath']) ?>" required>
                             </div>
 
                             <div class="col-12">
