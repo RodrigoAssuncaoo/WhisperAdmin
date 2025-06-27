@@ -64,10 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label class="form-label">ID Tipo Roteiro</label>
                         <input type="number" class="form-control" name="id_tipo_roteiro" required>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Imagem (picPath)</label>
-                        <input type="text" class="form-control" name="picPath" required>
-                    </div>
                     <div class="col-12">
                         <label class="form-label">Pontos do Roteiro</label>
                         <div id="pontosContainer">

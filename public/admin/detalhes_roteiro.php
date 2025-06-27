@@ -31,7 +31,6 @@ $pontos = $stmtPontos->fetchAll();
                         <h4 class="card-title mb-4"><?= htmlspecialchars($roteiro['nome']) ?></h4>
 
                         <p><strong>Tipo:</strong> <?= htmlspecialchars($roteiro['tipo_nome']) ?></p>
-
                         <h5>Pontos do Roteiro:</h5>
                         <ul class="list-group">
                             <?php foreach ($pontos as $p): ?>
