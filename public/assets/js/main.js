@@ -1,11 +1,7 @@
 /**
-* Template Name: NiceAdmin
-* Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-* Updated: Apr 20 2024 with Bootstrap v5.3.3
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-
+ * main.js
+ * Combina o NiceAdmin template + tuas customizações
+ */
 (function() {
   "use strict";
 
@@ -125,53 +121,21 @@
       theme: 'snow'
     });
   }
-
   if (select('.quill-editor-bubble')) {
     new Quill('.quill-editor-bubble', {
       theme: 'bubble'
     });
   }
-
   if (select('.quill-editor-full')) {
     new Quill(".quill-editor-full", {
       modules: {
         toolbar: [
-          [{
-            font: []
-          }, {
-            size: []
-          }],
+          [{ font: [] }, { size: [] }],
           ["bold", "italic", "underline", "strike"],
-          [{
-              color: []
-            },
-            {
-              background: []
-            }
-          ],
-          [{
-              script: "super"
-            },
-            {
-              script: "sub"
-            }
-          ],
-          [{
-              list: "ordered"
-            },
-            {
-              list: "bullet"
-            },
-            {
-              indent: "-1"
-            },
-            {
-              indent: "+1"
-            }
-          ],
-          ["direction", {
-            align: []
-          }],
+          [{ color: [] }, { background: [] }],
+          [{ script: "super" }, { script: "sub" }],
+          [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+          ["direction", { align: [] }],
           ["link", "image", "video"],
           ["clean"]
         ]
@@ -183,75 +147,20 @@
   /**
    * Initiate TinyMCE Editor
    */
-
   const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
-
   tinymce.init({
     selector: 'textarea.tinymce-editor',
-    plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
-    editimage_cors_hosts: ['picsum.photos'],
+    plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help quickbars emoticons accordion',
     menubar: 'file edit view insert format tools table help',
-    toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+    toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | emoticons | code fullscreen preview | save print | pagebreak codesample | ltr rtl",
     autosave_ask_before_unload: true,
     autosave_interval: '30s',
     autosave_prefix: '{path}{query}-{id}-',
     autosave_restore_when_empty: false,
     autosave_retention: '2m',
     image_advtab: true,
-    link_list: [{
-        title: 'My page 1',
-        value: 'https://www.tiny.cloud'
-      },
-      {
-        title: 'My page 2',
-        value: 'http://www.moxiecode.com'
-      }
-    ],
-    image_list: [{
-        title: 'My page 1',
-        value: 'https://www.tiny.cloud'
-      },
-      {
-        title: 'My page 2',
-        value: 'http://www.moxiecode.com'
-      }
-    ],
-    image_class_list: [{
-        title: 'None',
-        value: ''
-      },
-      {
-        title: 'Some class',
-        value: 'class-name'
-      }
-    ],
     importcss_append: true,
-    file_picker_callback: (callback, value, meta) => {
-      /* Provide file and text for the link dialog */
-      if (meta.filetype === 'file') {
-        callback('https://www.google.com/logos/google.jpg', {
-          text: 'My text'
-        });
-      }
-
-      /* Provide image and alt text for the image dialog */
-      if (meta.filetype === 'image') {
-        callback('https://www.google.com/logos/google.jpg', {
-          alt: 'My alt text'
-        });
-      }
-
-      /* Provide alternative source and posted for the media dialog */
-      if (meta.filetype === 'media') {
-        callback('movie.mp4', {
-          source2: 'alt.ogg',
-          poster: 'https://www.google.com/logos/google.jpg'
-        });
-      }
-    },
     height: 600,
-    image_caption: true,
     quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
     noneditable_class: 'mceNonEditable',
     toolbar_mode: 'sliding',
@@ -262,42 +171,30 @@
   });
 
   /**
-   * Initiate Bootstrap validation check
+   * Bootstrap validation check
    */
   var needsValidation = document.querySelectorAll('.needs-validation')
-
-  Array.prototype.slice.call(needsValidation)
-    .forEach(function(form) {
-      form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
-
-        form.classList.add('was-validated')
-      }, false)
-    })
+  Array.prototype.slice.call(needsValidation).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
 
   /**
    * Initiate Datatables
    */
-  const datatables = select('.datatable', true)
+  const datatables = select('.datatable', true) || []
   datatables.forEach(datatable => {
     new simpleDatatables.DataTable(datatable, {
       perPageSelect: [5, 10, 15, ["All", -1]],
-      columns: [{
-          select: 2,
-          sortSequence: ["desc", "asc"]
-        },
-        {
-          select: 3,
-          sortSequence: ["desc"]
-        },
-        {
-          select: 4,
-          cellClass: "green",
-          headerClass: "red"
-        }
+      columns: [
+        { select: 2, sortSequence: ["desc", "asc"] },
+        { select: 3, sortSequence: ["desc"] },
+        { select: 4, cellClass: "green", headerClass: "red" }
       ]
     });
   })
@@ -308,12 +205,112 @@
   const mainContainer = select('#main');
   if (mainContainer) {
     setTimeout(() => {
-      new ResizeObserver(function() {
-        select('.echart', true).forEach(getEchart => {
-          echarts.getInstanceByDom(getEchart).resize();
+      new ResizeObserver(() => {
+        select('.echart', true).forEach(chart => {
+          echarts.getInstanceByDom(chart).resize();
         })
       }).observe(mainContainer);
     }, 200);
   }
+
+  /***************************************************************************
+   *  A PARTIR DESTE PONTO, AS TUAS FUNÇÕES CUSTOMIZADAS (filter, form toggle)
+   ***************************************************************************/
+
+  // Aplica o filtro guardado (localStorage)
+  function aplicarFiltroGuardado() {
+    const filtroGuardado = localStorage.getItem('filtroRole') || 'todos';
+    filtrarTabelaPorRole(filtroGuardado);
+  }
+
+  // Configura botões de filtro
+  function configurarBotoesFiltro() {
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const role = btn.dataset.role;
+        filtrarTabelaPorRole(role);
+      });
+    });
+  }
+
+  // Toggle do formulário de adicionar
+  function configurarTogglesFormulario() {
+    const toggleBtn = document.getElementById('toggle-form-btn');
+    const form = document.getElementById('add-user-form');
+    if (!toggleBtn || !form) return;
+
+    toggleBtn.addEventListener('click', () => {
+      const isHidden = form.style.display === 'none' || form.style.display === '';
+      if (isHidden) {
+        form.style.display = 'block';
+        form.classList.remove('animate__fadeOutUp');
+        form.classList.add('animate__fadeInDown');
+      } else {
+        form.classList.remove('animate__fadeInDown');
+        form.classList.add('animate__fadeOutUp');
+        setTimeout(() => form.style.display = 'none', 500);
+      }
+    });
+  }
+
+  // Mostra o form de edição na linha correspondente
+  window.mostrarEditar = function(id) {
+    const row = document.getElementById(`editar-${id}`);
+    if (row) row.style.display = 'table-row';
+  }
+
+  // Fecha o form de edição
+  window.fecharEditar = function(id) {
+    const row = document.getElementById(`editar-${id}`);
+    if (row) row.style.display = 'none';
+  }
+
+  // Validação do form de adicionar/editar
+  window.validarFormulario = function() {
+    const nome = document.getElementById("nome")?.value.trim();
+    const email = document.getElementById("email")?.value.trim();
+    const contacto = document.getElementById("contacto")?.value.trim();
+    const password = document.getElementById("password")?.value.trim();
+    const role = document.getElementById("role")?.value;
+
+    if (!nome || !email || !contacto || !password || !role) {
+      alert("Todos os campos são obrigatórios.");
+      return false;
+    }
+    if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
+      alert("Nome inválido."); return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Email inválido."); return false;
+    }
+    if (!/^\d{9}$/.test(contacto)) {
+      alert("Contacto inválido."); return false;
+    }
+    if (password.length < 6) {
+      alert("Password fraca."); return false;
+    }
+    return true;
+  }
+
+  // Filtra linhas com base no data-role
+  function filtrarTabelaPorRole(role) {
+    const linhas = document.querySelectorAll('.user-row');
+    const botoes = document.querySelectorAll('.filtro-btn');
+    linhas.forEach(l => {
+      const r = l.dataset.role?.toLowerCase();
+      l.style.display = (role === 'todos' || r === role.toLowerCase()) ? '' : 'none';
+    });
+    botoes.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.role === role.toLowerCase());
+    });
+    localStorage.setItem('filtroRole', role);
+  }
+
+  // Quando a página carrega, inicializa filtros e toggles
+  window.addEventListener('DOMContentLoaded', () => {
+    aplicarFiltroGuardado();
+    configurarBotoesFiltro();
+    configurarTogglesFormulario();
+  });
 
 })();

@@ -19,7 +19,7 @@ try {
         throw new Exception("ID inválido.");
     }
 
-    $sql = "SELECT id, user_id, avaliacao_viagem, comentario 
+    $sql = "SELECT id, user_id, avaliacao_roteiro, comentario 
             FROM avaliacoes 
             WHERE id = ?";
     $stmt = mysqli_prepare($connection, $sql);
