@@ -3,11 +3,10 @@
 <?php require_once '../../../backend/db.php'; ?>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
 
 <main id="main" class="main">
   <div class="pagetitle">
-    <h1>Utilizadores</h1>
+    <h1>Users</h1>
   </div>
 
   <section class="section">
@@ -15,21 +14,20 @@
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Lista de Utilizadores</h5>
+            <h5 class="card-title">User List</h5>
 
             <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
               <div class="btn-group">
-                <button class="btn btn-outline-primary btn-sm filtro-btn" data-role="todos" onclick="filtrarRole('todos')">Todos</button>
+                <button class="btn btn-outline-primary btn-sm filtro-btn" data-role="todos" onclick="filtrarRole('todos')">All</button>
                 <button class="btn btn-outline-success btn-sm filtro-btn" data-role="admin" onclick="filtrarRole('Admin')">Admin</button>
-                <button class="btn btn-outline-warning btn-sm filtro-btn" data-role="guia" onclick="filtrarRole('Guia')">Guia</button>
-                <button class="btn btn-outline-info btn-sm filtro-btn" data-role="cliente" onclick="filtrarRole('Cliente')">Cliente</button>
+                <button class="btn btn-outline-warning btn-sm filtro-btn" data-role="guia" onclick="filtrarRole('Guia')">Guide</button>
+                <button class="btn btn-outline-info btn-sm filtro-btn" data-role="cliente" onclick="filtrarRole('Cliente')">Client</button>
               </div>
-                <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"
-                  onclick="toggleForm()" title="Adicionar Utilizador">
-                  <i></i> Adicionar Utilizador
-                </button>
-
-              </div>
+              <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"
+                onclick="toggleForm()" title="Add User">
+                <i></i> Add User
+              </button>
+            </div>
 
             <?php if (isset($_GET['erro'])): ?>
               <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>
@@ -37,12 +35,12 @@
               <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
             <?php endif; ?>
 
-            <!-- Formulário adicionar -->
-            <form id="add-user-form" class="border rounded p-3 mb-4 bg-light animate__animated"
+            <!-- Add Form -->
+            <form id="add-user-form" class="border rounded p-3 mb-4 bg-light"
                   method="POST" action="../adicionar_user.php" style="display: none;" onsubmit="return validarFormulario()">
               <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                  <label class="form-label">Nome</label>
+                  <label class="form-label">Name</label>
                   <input type="text" name="nome" id="nome" class="form-control" required>
                 </div>
                 <div class="col-md-3">
@@ -50,42 +48,42 @@
                   <input type="email" name="email" id="email" class="form-control" required>
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label">Contacto</label>
+                  <label class="form-label">Phone</label>
                   <input type="text" name="contacto" id="contacto" class="form-control" required>
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label">Palavra-passe</label>
+                  <label class="form-label">Password</label>
                   <input type="password" name="password" id="password" class="form-control" required>
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label">Função</label>
+                  <label class="form-label">Role</label>
                   <select name="role" id="role" class="form-select" required>
-                    <option value="">Escolher...</option>
+                    <option value="">Choose...</option>
                     <option value="1">Admin</option>
-                    <option value="2">Guia</option>
-                    <option value="3">Cliente</option>
+                    <option value="2">Guide</option>
+                    <option value="3">Client</option>
                   </select>
                 </div>
                 <div class="col-md-12 d-flex justify-content-end">
-                  <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+                  <button type="submit" class="btn btn-primary mt-2">Save</button>
                 </div>
               </div>
             </form>
 
-            <!-- Tabela -->
+            <!-- Table -->
             <table class="table datatable">
               <thead>
                 <tr>
-                  <th>Nome</th>
+                  <th>Name</th>
                   <th>Email</th>
-                  <th>Contacto</th>
-                  <th>Função</th>
-                  <th>Ação</th>
+                  <th>Phone</th>
+                  <th>Role</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
-                $roles = [1 => 'Admin', 2 => 'Guia', 3 => 'Cliente'];
+                $roles = [1 => 'Admin', 2 => 'Guide', 3 => 'Client'];
                 try {
                   $stmt = $pdo->query("SELECT * FROM users ORDER BY id DESC");
                   while ($user = $stmt->fetch(PDO::FETCH_ASSOC)):
@@ -97,15 +95,15 @@
                   <td><?= htmlspecialchars($user['contacto']) ?></td>
                   <td><?= $roles[$role] ?></td>
                   <td class="d-flex gap-1 flex-wrap">
-                    <button class="btn btn-sm btn-warning" onclick="mostrarEditar(<?= $user['id'] ?>)">Editar</button>
-                    <form method="POST" action="../apagar_user.php" onsubmit="return confirm('Tens a certeza?')" class="d-inline">
+                    <button class="btn btn-sm btn-warning" onclick="mostrarEditar(<?= $user['id'] ?>)">Edit</button>
+                    <form method="POST" action="../apagar_user.php" onsubmit="return confirm('Are you sure?')" class="d-inline">
                       <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                      <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                   </td>
                 </tr>
 
-                <!-- Formulário de edição centralizado -->
+                <!-- Edit Form -->
                 <tr id="editar-<?= $user['id'] ?>" style="display: none;">
                   <td colspan="5" class="text-center">
                     <form method="POST" action="../atualizar_user.php" class="row justify-content-center g-2">
@@ -122,19 +120,19 @@
                       <div class="col-md-2">
                         <select name="role" class="form-select" required>
                           <option value="1" <?= $role == 1 ? 'selected' : '' ?>>Admin</option>
-                          <option value="2" <?= $role == 2 ? 'selected' : '' ?>>Guia</option>
-                          <option value="3" <?= $role == 3 ? 'selected' : '' ?>>Cliente</option>
+                          <option value="2" <?= $role == 2 ? 'selected' : '' ?>>Guide</option>
+                          <option value="3" <?= $role == 3 ? 'selected' : '' ?>>Client</option>
                         </select>
                       </div>
                       <div class="col-md-4 d-flex gap-1 justify-content-center">
-                        <button type="submit" class="btn btn-success btn-sm">Guardar</button>
-                        <button type="button" onclick="fecharEditar(<?= $user['id'] ?>)" class="btn btn-secondary btn-sm">Cancelar</button>
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                        <button type="button" onclick="fecharEditar(<?= $user['id'] ?>)" class="btn btn-secondary btn-sm">Cancel</button>
                       </div>
                     </form>
                   </td>
                 </tr>
                 <?php endwhile; } catch (PDOException $e) {
-                  echo '<tr><td colspan="5">Erro ao carregar utilizadores.</td></tr>';
+                  echo '<tr><td colspan="5">Error loading users.</td></tr>';
                 } ?>
               </tbody>
             </table>
@@ -149,15 +147,7 @@
 <script>
 function toggleForm() {
   const form = document.getElementById('add-user-form');
-  if (form.style.display === 'none' || form.style.display === '') {
-    form.style.display = 'block';
-    form.classList.remove('animate__fadeOutUp');
-    form.classList.add('animate__fadeInDown');
-  } else {
-    form.classList.remove('animate__fadeInDown');
-    form.classList.add('animate__fadeOutUp');
-    setTimeout(() => form.style.display = 'none', 500);
-  }
+  form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
 }
 
 function mostrarEditar(id) {
@@ -176,27 +166,27 @@ function validarFormulario() {
   const role = document.getElementById("role").value;
 
   if (!nome || !email || !contacto || !password || !role) {
-    alert("Todos os campos são obrigatórios.");
+    alert("All fields are required.");
     return false;
   }
 
   if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
-    alert("Nome inválido.");
+    alert("Invalid name.");
     return false;
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Email inválido.");
+    alert("Invalid email.");
     return false;
   }
 
   if (!/^\d{9}$/.test(contacto)) {
-    alert("Contacto inválido.");
+    alert("Invalid phone number.");
     return false;
   }
 
   if (password.length < 6) {
-    alert("Password fraca.");
+    alert("Weak password.");
     return false;
   }
 
@@ -204,13 +194,13 @@ function validarFormulario() {
 }
 
 function filtrarRole(role) {
-  const linhas = document.querySelectorAll('.user-row');
-  const botoes = document.querySelectorAll('.filtro-btn');
-  linhas.forEach(l => {
-    const r = l.dataset.role.toLowerCase();
-    l.style.display = (role === 'todos' || r === role.toLowerCase()) ? '' : 'none';
+  const rows = document.querySelectorAll('.user-row');
+  const buttons = document.querySelectorAll('.filtro-btn');
+  rows.forEach(row => {
+    const r = row.dataset.role.toLowerCase();
+    row.style.display = (role === 'todos' || r === role.toLowerCase()) ? '' : 'none';
   });
-  botoes.forEach(btn => {
+  buttons.forEach(btn => {
     btn.classList.remove('active');
     if (btn.dataset.role === role.toLowerCase()) btn.classList.add('active');
   });
@@ -218,8 +208,8 @@ function filtrarRole(role) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const filtroGuardado = localStorage.getItem('filtroRole') || 'todos';
-  filtrarRole(filtroGuardado);
+  const savedFilter = localStorage.getItem('filtroRole') || 'todos';
+  filtrarRole(savedFilter);
 });
 </script>
 

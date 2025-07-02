@@ -3,36 +3,36 @@ require_once '../../backend/db.php';
 include 'includes/header.php'; 
 include 'includes/sidebar.php'; 
 $id = $_GET['id'];
-try{
-$stmt = $pdo->prepare("SELECT * FROM roteiros WHERE id = ?");
-$stmt->execute([$id]);
-$roteiro = $stmt->fetch();
+try {
+    $stmt = $pdo->prepare("SELECT * FROM roteiros WHERE id = ?");
+    $stmt->execute([$id]);
+    $roteiro = $stmt->fetch();
 
-$stmtPontos = $pdo->query("SELECT id, nome FROM pontos ORDER BY nome ASC");
-$todosPontos = $stmtPontos->fetchAll();
+    $stmtPontos = $pdo->query("SELECT id, nome FROM pontos ORDER BY nome ASC");
+    $allPoints = $stmtPontos->fetchAll();
 
-$stmtAssoc = $pdo->prepare("SELECT id_ponto FROM roteiro_pontos WHERE id_roteiro = ?");
-$stmtAssoc->execute([$id]);
-$pontosAssociados = array_column($stmtAssoc->fetchAll(), 'id_ponto');
+    $stmtAssoc = $pdo->prepare("SELECT id_ponto FROM roteiro_pontos WHERE id_roteiro = ?");
+    $stmtAssoc->execute([$id]);
+    $associatedPoints = array_column($stmtAssoc->fetchAll(), 'id_ponto');
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nome = $_POST['nome'];
-    $id_tipo = $_POST['id_tipo_roteiro'];
-    $novosPontos = $_POST['pontos'];
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $name = $_POST['nome'];
+        $typeId = $_POST['id_tipo_roteiro'];
+        $newPoints = $_POST['pontos'];
 
-    $stmt = $pdo->prepare("UPDATE roteiros SET nome = ?, id_tipo_roteiro = ? WHERE id = ?");
-    $stmt->execute([$nome, $id_tipo, $id]);
+        $stmt = $pdo->prepare("UPDATE roteiros SET nome = ?, id_tipo_roteiro = ? WHERE id = ?");
+        $stmt->execute([$name, $typeId, $id]);
 
-    $pdo->prepare("DELETE FROM roteiro_pontos WHERE id_roteiro = ?")->execute([$id]);
+        $pdo->prepare("DELETE FROM roteiro_pontos WHERE id_roteiro = ?")->execute([$id]);
 
-    $stmtInsert = $pdo->prepare("INSERT INTO roteiro_pontos (id_roteiro, id_ponto) VALUES (?, ?)");
-    foreach ($novosPontos as $p) {
-        $stmtInsert->execute([$id, $p]);
+        $stmtInsert = $pdo->prepare("INSERT INTO roteiro_pontos (id_roteiro, id_ponto) VALUES (?, ?)");
+        foreach ($newPoints as $p) {
+            $stmtInsert->execute([$id, $p]);
+        }
+
+        header("Location: tables/roteirostable.php?sucesso=Route updated successfully!");
+        exit;
     }
-
-    header("Location: tables/roteirostable.php?sucesso=Roteiro atualizado com sucesso!");
-exit;
-}
 } catch (PDOException $e) {
     header("Location: tables/roteirostable.php?erro=" . urlencode($e->getMessage()));
     exit;
@@ -41,7 +41,7 @@ exit;
 
 <main id="main" class="main">
     <div class="pagetitle">
-        <h1>Editar Roteiro</h1>
+        <h1>Edit Route</h1>
     </div>
 
     <section class="section">
@@ -49,26 +49,26 @@ exit;
             <div class="col-lg-12">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="card-title">Alterar Dados do Roteiro</h5>
+                        <h5 class="card-title">Update Route Information</h5>
 
                         <form method="POST" class="row g-3">
                             <div class="col-md-4">
-                                <label class="form-label">Nome</label>
+                                <label class="form-label">Name</label>
                                 <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($roteiro['nome']) ?>" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">ID Tipo Roteiro</label>
+                                <label class="form-label">Route Type ID</label>
                                 <input type="number" name="id_tipo_roteiro" class="form-control" value="<?= $roteiro['id_tipo_roteiro'] ?>" required>
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label">Pontos Associados</label>
+                                <label class="form-label">Associated Points</label>
                                 <div class="row">
-                                    <?php foreach ($todosPontos as $p): ?>
+                                    <?php foreach ($allPoints as $p): ?>
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input type="checkbox" class="form-check-input" name="pontos[]" value="<?= $p['id'] ?>"
-                                                    <?= in_array($p['id'], $pontosAssociados) ? 'checked' : '' ?>>
+                                                    <?= in_array($p['id'], $associatedPoints) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"><?= htmlspecialchars($p['nome']) ?></label>
                                             </div>
                                         </div>
@@ -77,8 +77,8 @@ exit;
                             </div>
 
                             <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                                <button type="submit" class="btn btn-primary">Guardar Alterações</button>
-                                <a href="tables/roteirostable.php" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="tables/roteirostable.php" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>
 

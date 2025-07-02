@@ -82,15 +82,15 @@ try {
         'contacto'     => $contacto,
         'role'         => $role,
         'roleName'     => (new User(
-                             $id,
-                             $role,
-                             $nome,
-                             $contacto,
-                             $email,
-                             $token,
-                             '',         // password ignorada
-                             $createdAt
-                          ))->getRoleName(),
+            $id,
+            $role,
+            $nome,
+            $contacto,
+            $email,
+            $token,
+            '',         // password ignorada
+            $createdAt
+        ))->getRoleName(),
         'token'        => $token,
         'createdAt'    => $createdAt,
         'expiresAt'    => $expiresAt,
@@ -112,7 +112,6 @@ try {
         $response,
         JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     );
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

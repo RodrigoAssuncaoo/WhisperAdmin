@@ -4,7 +4,7 @@ require_once '../../backend/db.php';
 require_once 'includes/header.php';
 require_once 'includes/sidebar.php';
 
-// Verifica se o utilizador está autenticado
+// Check if the user is authenticated
 if (!isset($_SESSION['user']['id'])) {
     header("Location: /login.php");
     exit;
@@ -13,40 +13,40 @@ if (!isset($_SESSION['user']['id'])) {
 $userId = $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = trim($_POST['nome'] ?? '');
+    $name = trim($_POST['nome'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $contacto = trim($_POST['contacto'] ?? '');
+    $phone = trim($_POST['contacto'] ?? '');
     $password = $_POST['password'] ?? '';
 
     try {
-        if (empty($nome) || empty($email)) {
-            throw new Exception("Nome e email são obrigatórios.");
+        if (empty($name) || empty($email)) {
+            throw new Exception("Name and email are required.");
         }
 
         if (!empty($password)) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ?, contacto = ?, password = ? WHERE id = ?");
-            $stmt->execute([$nome, $email, $contacto, $hashedPassword, $userId]);
+            $stmt->execute([$name, $email, $phone, $hashedPassword, $userId]);
         } else {
             $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ?, contacto = ? WHERE id = ?");
-            $stmt->execute([$nome, $email, $contacto, $userId]);
+            $stmt->execute([$name, $email, $phone, $userId]);
         }
 
-        // Atualiza os dados da sessão
-        $_SESSION['user']['nome'] = $nome;
+        // Update session data
+        $_SESSION['user']['nome'] = $name;
         $_SESSION['user']['email'] = $email;
-        $_SESSION['user']['contacto'] = $contacto;
+        $_SESSION['user']['contacto'] = $phone;
 
-        $success = "Perfil atualizado com sucesso!";
+        $success = "Profile updated successfully!";
     } catch (Exception $e) {
-        $error = "Erro ao atualizar perfil: " . $e->getMessage();
+        $error = "Error updating profile: " . $e->getMessage();
     }
 }
 ?>
 
 <main id="main" class="main">
   <div class="container">
-    <h1 class="h3 mb-4 text-gray-800">Perfil do Utilizador</h1>
+    <h1 class="h3 mb-4 text-gray-800">User Profile</h1>
 
     <?php if (isset($success)): ?>
       <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
       <div class="mb-3">
-        <label>Nome de Utilizador</label>
+        <label>Username</label>
         <input type="text" name="nome" value="<?= htmlspecialchars($_SESSION['user']['nome'] ?? '') ?>" class="form-control" required>
       </div>
       <div class="mb-3">
@@ -64,14 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="email" name="email" value="<?= htmlspecialchars($_SESSION['user']['email'] ?? '') ?>" class="form-control" required>
       </div>
       <div class="mb-3">
-        <label>Contacto</label>
+        <label>Phone</label>
         <input type="text" name="contacto" value="<?= htmlspecialchars($_SESSION['user']['contacto'] ?? '') ?>" class="form-control">
       </div>
       <div class="mb-3">
-        <label>Nova Senha (deixe em branco para manter)</label>
+        <label>New Password (leave blank to keep current)</label>
         <input type="password" name="password" class="form-control">
       </div>
-      <button type="submit" class="btn btn-primary">Guardar</button>
+      <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </div>
 </main>

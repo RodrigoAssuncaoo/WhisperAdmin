@@ -3,7 +3,7 @@ session_start();
 require_once '../../backend/db.php';
 include 'includes/styles.php';
 
-// Lógica de login SEM reCAPTCHA
+// Login logic WITHOUT reCAPTCHA
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email']);
   $password = trim($_POST['password']);
@@ -15,19 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
       $_SESSION['user_id'] = $user['id'];
-      $_SESSION['user'] = $user; // guarda nome, email, role, etc.
+      $_SESSION['user'] = $user; // store name, email, role, etc.
       header('Location: index.php');
       exit;
     } else {
-      $erro = "Email ou palavra-passe incorretos.";
+      $error = "Incorrect email or password.";
     }
   } catch (Exception $e) {
-    $erro = "Erro no login: " . $e->getMessage();
+    $error = "Login error: " . $e->getMessage();
   }
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -66,36 +66,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Whisper Logo">
       </div>
 
-      <h4 class="text-center mb-3">Login na sua conta</h4>
-      <p class="text-center text-muted small mb-4">Introduza o seu email e palavra-passe</p>
+      <h4 class="text-center mb-3">Login to your account</h4>
+      <p class="text-center text-muted small mb-4">Enter your email and password</p>
 
-      <!-- Mensagem de erro -->
-      <?php if (isset($erro)): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
+      <!-- Error message -->
+      <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
       <?php endif; ?>
 
-      <!-- Formulário -->
-      <form method="POST" action="" onsubmit="return validarFormulario()">
+      <!-- Form -->
+      <form method="POST" action="" onsubmit="return validateForm()">
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
           <input type="email" name="email" class="form-control" id="email" required>
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Palavra-passe</label>
+          <label for="password" class="form-label">Password</label>
           <input type="password" name="password" class="form-control" id="password" required>
         </div>
 
-        
         <div class="mb-3">
           <div class="g-recaptcha" data-sitekey="6Lc_Yz0rAAAAAM_ZttifOn4acP3yES6dJhi_bO-z"></div>
         </div>
-        
 
         <div class="d-grid">
-          <button type="submit" class="btn btn-primary">Entrar</button>
+          <button type="submit" class="btn btn-primary">Login</button>
         </div>
         <div class="text-center mt-3">
-          <p class="small">Ainda não tem conta? <a href="signup.php">Crie uma conta</a></p>
+          <p class="small">Don't have an account yet? <a href="signup.php">Create an account</a></p>
         </div>
       </form>
     </div>
@@ -104,12 +102,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Scripts -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script>
-    function validarFormulario() {
+    function validateForm() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
 
       if (!email || !password) {
-        alert('Preencha todos os campos.');
+        alert('Please fill in all fields.');
         return false;
       }
       return true;

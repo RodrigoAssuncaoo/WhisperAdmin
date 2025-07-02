@@ -4,23 +4,23 @@ include 'includes/header.php';
 include 'includes/sidebar.php';
 require_once '../../backend/db.php';
 
-// Quantidade de utilizadores
-$quantidadeUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+// Total users
+$totalUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 
-// Quantidade de roteiros
-$quantidadeRoteiros = $pdo->query("SELECT COUNT(*) FROM roteiros")->fetchColumn();
+// Total routes
+$totalRoutes = $pdo->query("SELECT COUNT(*) FROM roteiros")->fetchColumn();
 
-// Avaliações boas (>5)
-$avaliacoesBoas = $pdo->query("SELECT COUNT(*) FROM avaliacoes WHERE avaliacao_roteiro > 5")->fetchColumn();
+// Good reviews (>5)
+$positiveReviews = $pdo->query("SELECT COUNT(*) FROM avaliacoes WHERE avaliacao_roteiro > 5")->fetchColumn();
 
-// Top 5 roteiros mais populares baseados na média de avaliações
-$topRoteiros = $pdo->query("
-    SELECT r.nome, ROUND(AVG(a.avaliacao_roteiro), 2) AS media_score
+// Top 5 most popular routes based on average score
+$topRoutes = $pdo->query("
+    SELECT r.nome, ROUND(AVG(a.avaliacao_roteiro), 2) AS average_score
     FROM roteiros r
     JOIN avaliacoes a ON r.id = a.id_roteiro
     GROUP BY r.id
-    HAVING media_score > 7
-    ORDER BY media_score DESC
+    HAVING average_score > 7
+    ORDER BY average_score DESC
     LIMIT 5
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -38,86 +38,88 @@ $topRoteiros = $pdo->query("
 
   <section class="section dashboard">
     <div class="row">
-      <!-- Roteiros -->
+
+      <!-- Routes -->
       <div class="col-xxl-4 col-md-6">
         <div class="card info-card sales-card">
           <div class="card-body">
-            <h5 class="card-title">Total de Roteiros</h5>
+            <h5 class="card-title">Total Routes</h5>
             <div class="d-flex align-items-center">
               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                 <i class="bi bi-map"></i>
               </div>
               <div class="ps-3">
-                <h6><?= $quantidadeRoteiros ?></h6>
-                <span class="text-muted small pt-2 ps-1">Roteiros criados</span>
+                <h6><?= $totalRoutes ?></h6>
+                <span class="text-muted small pt-2 ps-1">Routes created</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Avaliações boas -->
+      <!-- Positive Reviews -->
       <div class="col-xxl-4 col-md-6">
         <div class="card info-card customers-card">
           <div class="card-body">
-            <h5 class="card-title">Avaliações Positivas</h5>
+            <h5 class="card-title">Positive Reviews</h5>
             <div class="d-flex align-items-center">
               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                 <i class="bi bi-star-fill"></i>
               </div>
               <div class="ps-3">
-                <h6><?= $avaliacoesBoas ?></h6>
-                <span class="text-success small pt-1 fw-bold">>5 estrelas</span>
+                <h6><?= $positiveReviews ?></h6>
+                <span class="text-success small pt-1 fw-bold">>5 stars</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Utilizadores -->
+      <!-- Users -->
       <div class="col-xxl-4 col-xl-12">
         <div class="card info-card customers-card">
           <div class="card-body">
-            <h5 class="card-title">Utilizadores</h5>
+            <h5 class="card-title">Users</h5>
             <div class="d-flex align-items-center">
               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                 <i class="bi bi-people"></i>
               </div>
               <div class="ps-3">
-                <h6><?= $quantidadeUsers ?></h6>
+                <h6><?= $totalUsers ?></h6>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Tabela de roteiros mais populares -->
+      <!-- Most Popular Routes Table -->
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Roteiros Populares (Média de Avaliacoes > 7 )</h5>
+            <h5 class="card-title">Popular Routes (Average Rating > 7)</h5>
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>Roteiro</th>
-                  <th>Média de Avaliação</th>
+                  <th>Route</th>
+                  <th>Average Rating</th>
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($topRoteiros as $roteiro): ?>
+                <?php foreach ($topRoutes as $route): ?>
                   <tr>
-                    <td><?= htmlspecialchars($roteiro['nome']) ?></td>
-                    <td><?= $roteiro['media_score'] ?></td>
+                    <td><?= htmlspecialchars($route['nome']) ?></td>
+                    <td><?= $route['average_score'] ?></td>
                   </tr>
                 <?php endforeach; ?>
-                <?php if (empty($topRoteiros)): ?>
-                  <tr><td colspan="2">Nenhum dado encontrado.</td></tr>
+                <?php if (empty($topRoutes)): ?>
+                  <tr><td colspan="2">No data found.</td></tr>
                 <?php endif; ?>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 </main>

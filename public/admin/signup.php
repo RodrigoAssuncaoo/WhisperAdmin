@@ -1,27 +1,26 @@
 <?php
 session_start();
 
-
 require_once '../../backend/db.php';
 include 'includes/styles.php';
 
-$erro = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   try {
-    $nome = trim($_POST['nome']);
-    $contacto = $_POST['contacto'];
+    $name = trim($_POST['nome']);
+    $phone = $_POST['contacto'];
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $confirmPassword = trim($_POST['confirm-password']);
-    //----------------capcha google-------------------------------------------
-    // Verificar reCAPTCHA
+
+    // Google reCAPTCHA verification
     if (!isset($_POST['g-recaptcha-response'])) {
-      throw new Exception("Por favor confirme que não é um robô.");
+      throw new Exception("Please confirm you're not a robot.");
     }
 
     $recaptcha = $_POST['g-recaptcha-response'];
-    $secretKey = '6Lc_Yz0rAAAAAKsaJ8eylk7LadyDn29OXWWzosZW'; // <- Substitui pela tua chave secreta
+    $secretKey = '6Lc_Yz0rAAAAAKsaJ8eylk7LadyDn29OXWWzosZW';
 
     $url = 'https://www.google.com/recaptcha/api/siteverify';
     $data = [
@@ -40,37 +39,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $context = stream_context_create($options);
     $verify = file_get_contents($url, false, $context);
     $captcha_success = json_decode($verify);
-    //-----------------------------validacoes---------------------------------------------------------------
+
     if (!$captcha_success->success) {
-      throw new Exception("Validação reCAPTCHA falhou. Tente novamente.");
+      throw new Exception("reCAPTCHA validation failed. Please try again.");
     }
 
-    // Validação de campos obrigatórios
-    if (empty($nome) || empty($contacto) || empty($email) || empty($password) || empty($confirmPassword)) {
-      throw new Exception("Todos os campos são obrigatórios.");
+    // Field validation
+    if (empty($name) || empty($phone) || empty($email) || empty($password) || empty($confirmPassword)) {
+      throw new Exception("All fields are required.");
     }
 
-    // Validação do email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      throw new Exception("O email inserido não é válido.");
+      throw new Exception("The provided email is not valid.");
     }
 
-      // Confirmar password
     if ($password !== $confirmPassword) {
-      throw new Exception("As passwords não coincidem.");
+      throw new Exception("Passwords do not match.");
     }
-    //-----------------------------------------------------------------------------------------------
-    // Geração de token e validade
+
+    // Generate token and expiration
     $token = bin2hex(random_bytes(16));
     $expires_at = date('Y-m-d H:i:s', time() + 600);
 
-    // Inserção no banco
+    // Insert into database
     $sqlInsert = "INSERT INTO users (nome, contacto, email, password, token, expires_at, role)
                   VALUES (:nome, :contacto, :email, :password, :token, :expires_at, :role)";
     $stmt = $pdo->prepare($sqlInsert);
     $stmt->execute([
-      'nome' => $nome,
-      'contacto' => $contacto,
+      'nome' => $name,
+      'contacto' => $phone,
       'email' => $email,
       'password' => password_hash($password, PASSWORD_DEFAULT),
       'token' => $token,
@@ -81,17 +78,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Location: login.php');
     exit;
   } catch (Exception $e) {
-    $erro = $e->getMessage();
+    $error = $e->getMessage();
   }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="pt">
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Criar Conta - Whisper</title>
+  <title>Create Account - Whisper</title>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
@@ -105,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
               <div class="d-flex justify-content-center py-4">
                 <a href="/" class="logo d-flex align-items-center w-auto">
-                  <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Logo Whisper">
+                  <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Whisper Logo">
                   <span class="d-none d-lg-block">Whisper</span>
                 </a>
               </div>
@@ -114,55 +110,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Criar Conta</h5>
-                    <p class="text-center small">Introduza os seus dados pessoais para criar uma conta</p>
+                    <h5 class="card-title text-center pb-0 fs-4">Create Account</h5>
+                    <p class="text-center small">Enter your personal details to create an account</p>
                   </div>
 
-                  <?php if (!empty($erro)): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="erro-alerta">
-                      <?= htmlspecialchars($erro) ?>
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                  <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error-alert">
+                      <?= htmlspecialchars($error) ?>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                   <?php endif; ?>
 
                   <form method="POST" action="" class="row g-3 needs-validation" novalidate>
                     <div class="col-12">
-                      <label for="yourName" class="form-label">Nome</label>
+                      <label for="yourName" class="form-label">Name</label>
                       <input type="text" name="nome" class="form-control" id="yourName" required>
-                      <div class="invalid-feedback">Por favor, insira o seu nome!</div>
+                      <div class="invalid-feedback">Please enter your name!</div>
                     </div>
 
                     <div class="col-12">
                       <label for="yourEmail" class="form-label">Email</label>
                       <input type="email" name="email" class="form-control" id="yourEmail" required>
-                      <div class="invalid-feedback">Por favor, insira um email válido!</div>
+                      <div class="invalid-feedback">Please enter a valid email!</div>
                     </div>
 
                     <div class="col-12">
-                      <label for="yourPhone" class="form-label">Contacto</label>
+                      <label for="yourPhone" class="form-label">Phone</label>
                       <input type="text" name="contacto" class="form-control" id="yourPhone" required>
-                      <div class="invalid-feedback">Por favor, insira o seu contacto!</div>
+                      <div class="invalid-feedback">Please enter your phone number!</div>
                     </div>
 
                     <div class="col-12">
-                      <label for="yourPassword" class="form-label">Palavra-passe</label>
+                      <label for="yourPassword" class="form-label">Password</label>
                       <input type="password" name="password" class="form-control" id="yourPassword" required>
-                      <div class="invalid-feedback">Por favor, insira a sua palavra-passe!</div>
+                      <div class="invalid-feedback">Please enter your password!</div>
                     </div>
 
                     <div class="col-12">
-                      <label for="yourConfirmPassword" class="form-label">Confirmar Palavra-passe</label>
+                      <label for="yourConfirmPassword" class="form-label">Confirm Password</label>
                       <input type="password" name="confirm-password" class="form-control" id="yourConfirmPassword" required>
-                      <div class="invalid-feedback">Por favor, confirme a sua palavra-passe!</div>
+                      <div class="invalid-feedback">Please confirm your password!</div>
                     </div>
 
                     <!-- Google reCAPTCHA -->
                     <div class="col-12">
-                      <div class="g-recaptcha" data-sitekey="6Lc_Yz0rAAAAAM_ZttifOn4acP3yES6dJhi_bO-z"></div> <!-- <- Substitui pela tua site key -->
+                      <div class="g-recaptcha" data-sitekey="6Lc_Yz0rAAAAAM_ZttifOn4acP3yES6dJhi_bO-z"></div>
                     </div>
 
                     <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Criar Conta</button>
+                      <button class="btn btn-primary w-100" type="submit">Create Account</button>
                     </div>
                   </form>
 
@@ -179,17 +175,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <!-- Scripts -->
   <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Fechar automaticamente alerta após 5 segundos
+    // Auto-hide alert after 5 seconds
     setTimeout(() => {
-      const alerta = document.getElementById('erro-alerta');
-      if (alerta) {
-        alerta.classList.remove('show');
-        alerta.classList.add('fade');
+      const alert = document.getElementById('error-alert');
+      if (alert) {
+        alert.classList.remove('show');
+        alert.classList.add('fade');
       }
     }, 5000);
   </script>
 
   <?php include 'includes/footer.php'; ?>
 </body>
-
 </html>

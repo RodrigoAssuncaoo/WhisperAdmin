@@ -3,12 +3,13 @@ header("Content-Type: application/json");
 
 require_once '../../../vendor/autoload.php';
 include_once '../../../backend/connection.php';
-include_once '../../../backend/models/user.php'; 
+include_once '../../../backend/models/user.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 try {
+    // Obter email e password do POST
     $email = isset($_POST['email']) ? trim($_POST['email']) : null;
     $password = isset($_POST['password']) ? trim($_POST['password']) : null;
 
@@ -22,7 +23,7 @@ try {
         throw new Exception("Erro na conexão com o banco de dados.");
     }
 
-    // Preparando e executando a consulta ao banco de dados
+    // Procurar utilizador na base de dados
     $stmt = $connection->prepare("SELECT id, nome, email, password, role, contacto, created_at FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -34,52 +35,52 @@ try {
         exit;
     }
 
-    // Recuperando o resultado da consulta como array associativo
     $user = $result->fetch_assoc();
 
-    // Verificando a senha
+    // Verificar a password
     if (!password_verify($password, $user['password'])) {
         http_response_code(401);
         echo json_encode(["error" => "Credenciais inválidas."]);
         exit;
     }
 
-    // Gerar o token JWT
-    $secretKey = "SUA_CHAVE_SECRETA"; // Substitua por uma constante segura ou carregue de um .env
+    // Gerar JWT
+    $secretKey = "SUA_CHAVE_SECRETA"; // Trocar por getenv('JWT_SECRET') num .env se possível
     $payload = [
-        "iss" => "seusite.com",
-        "aud" => "seusite.com",
+        "iss" => "whisper.app",
+        "aud" => "whisper.app",
         "iat" => time(),
-        "exp" => time() + (24 * 60 * 60), // 24 horas de validade
+        "exp" => time() + (24 * 60 * 60), // 24 horas
         "data" => [
             "id" => $user['id'],
             "nome" => $user['nome'],
             "email" => $user['email'],
             "role" => $user['role'],
             "contacto" => $user['contacto'],
-            "created_at" => $user['created_at'],        
-            ]
+            "created_at" => $user['created_at']
+        ]
     ];
 
     $jwt = JWT::encode($payload, $secretKey, 'HS256');
 
-    // Criando o objeto User e passando os dados corretos
+    // Criar objeto User (assumindo que o construtor aceita estes parâmetros)
     $userObject = new User(
         $user['id'],
         $user['role'],
         $user['nome'],
         $user['contacto'],
         $user['email'],
-        $jwt, // Passando o token JWT para o objeto User
-        $user['password'],
-        $user['created_at'],
+        $jwt,
+        $user['password'], // cuidado: está a incluir a password encriptada na resposta
+        $user['created_at']
     );
 
-    // Respondendo com sucesso
+    // Resposta para a app
     http_response_code(200);
     echo json_encode([
         "success" => true,
-        "user" => $userObject->jsonSerialize(), // Chamando o método jsonSerialize para enviar os dados do usuário
+        "token" => $jwt,
+        "user" => $userObject->jsonSerialize(), // resposta com os dados + token
         "message" => "Login bem-sucedido."
     ]);
 

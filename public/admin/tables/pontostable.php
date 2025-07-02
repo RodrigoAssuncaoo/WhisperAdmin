@@ -6,7 +6,7 @@ include '../includes/sidebar.php';
 
 <main id="main" class="main">
   <div class="pagetitle">
-    <h1>Pontos Turísticos</h1>
+    <h1>Tourist Spots</h1>
   </div>
 
   <section class="section">
@@ -14,30 +14,30 @@ include '../includes/sidebar.php';
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Lista de Pontos Turísticos</h5>
+            <h5 class="card-title">List of Tourist Spots</h5>
 
-            <!-- Botão para Adicionar Ponto -->
+            <!-- Button to Add Point -->
             <div class="mb-3 d-flex justify-content-end">
               <button class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center"
                 style="height: 38px; padding-left: 10px; padding-right: 10px;" onclick="toggleForm()"
-                title="Adicionar Ponto Turístico">
-                <i></i> Adicionar Ponto Turístico
+                title="Add Tourist Spot">
+                <i></i> Add Tourist Spot
               </button>
             </div>
 
-            <!-- Mensagens de Sucesso ou Erro -->
+            <!-- Success or Error Messages -->
             <?php if (isset($_GET['erro'])): ?>
               <div class="alert alert-danger"><?= htmlspecialchars($_GET['erro']) ?></div>
             <?php elseif (isset($_GET['sucesso'])): ?>
               <div class="alert alert-success"><?= htmlspecialchars($_GET['sucesso']) ?></div>
             <?php endif; ?>
 
-            <!-- Formulário de Adicionar Ponto -->
+            <!-- Add Point Form -->
             <form id="add-ponto-form" class="border rounded p-3 mb-4 bg-light animate__animated" method="POST"
               action="../adicionar_ponto.php" style="display: none;">
               <div class="row g-2 align-items-end">
                 <div class="col-md-4">
-                  <label class="form-label">Nome do Ponto</label>
+                  <label class="form-label">Point Name</label>
                   <input type="text" name="nome" class="form-control" required>
                 </div>
                 <div class="col-md-4">
@@ -51,36 +51,36 @@ include '../includes/sidebar.php';
                     pattern="^-?\d+([.,]\d+)?$" oninput="this.value = this.value.replace(',', '.')">
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Ponto Inicial</label>
+                  <label class="form-label">Starting Point</label>
                   <select name="ponto_inicial" class="form-control" required>
-                    <option value="sim">Sim</option>
-                    <option value="nao">Não</option>
+                    <option value="sim">Yes</option>
+                    <option value="nao">No</option>
                   </select>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Ponto Final</label>
+                  <label class="form-label">End Point</label>
                   <select name="ponto_final" class="form-control" required>
-                    <option value="sim">Sim</option>
-                    <option value="nao">Não</option>
+                    <option value="sim">Yes</option>
+                    <option value="nao">No</option>
                   </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                  <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                  <button type="submit" class="btn btn-primary w-100">Save</button>
                 </div>
               </div>
             </form>
 
-            <!-- Tabela de Pontos -->
+            <!-- Table of Points -->
             <table class="table datatable">
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nome</th>
+                  <th>Name</th>
                   <th>Longitude</th>
                   <th>Latitude</th>
-                  <th>Ponto Inicial</th>
-                  <th>Ponto Final</th>
-                  <th>Ação</th>
+                  <th>Starting Point</th>
+                  <th>End Point</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,19 +94,19 @@ include '../includes/sidebar.php';
                   <td><?= htmlspecialchars($ponto['nome']) ?></td>
                   <td><?= htmlspecialchars($ponto['longitude']) ?></td>
                   <td><?= htmlspecialchars($ponto['latitude']) ?></td>
-                  <td><?= $ponto['ponto_inicial'] ? 'Sim' : 'Não' ?></td>
-                  <td><?= $ponto['ponto_final'] ? 'Sim' : 'Não' ?></td>
+                  <td><?= $ponto['ponto_inicial'] ? 'Yes' : 'No' ?></td>
+                  <td><?= $ponto['ponto_final'] ? 'Yes' : 'No' ?></td>
                   <td class="d-flex gap-1 flex-wrap">
-                    <button class="btn btn-sm btn-warning" onclick="mostrarEditar(<?= $ponto['id'] ?>)">Editar</button>
-                    <form method="POST" action="../apagar_ponto.php" onsubmit="return confirm('Tens a certeza?')"
+                    <button class="btn btn-sm btn-warning" onclick="mostrarEditar(<?= $ponto['id'] ?>)">Edit</button>
+                    <form method="POST" action="../apagar_ponto.php" onsubmit="return confirm('Are you sure?')"
                       class="d-inline">
                       <input type="hidden" name="id" value="<?= $ponto['id'] ?>">
-                      <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                   </td>
                 </tr>
 
-                <!-- Formulário de Edição -->
+                <!-- Edit Form -->
                 <tr id="editar-<?= $ponto['id'] ?>" style="display: none;">
                   <td colspan="7">
                     <form method="POST" action="../atualizar_ponto.php" class="row g-2 justify-content-center">
@@ -128,26 +128,26 @@ include '../includes/sidebar.php';
                       </div>
                       <div class="col-md-4">
                         <select name="ponto_inicial" class="form-control" required>
-                          <option value="1" <?= $ponto['ponto_inicial'] ? 'selected' : '' ?>>Sim</option>
-                          <option value="0" <?= !$ponto['ponto_inicial'] ? 'selected' : '' ?>>Não</option>
+                          <option value="1" <?= $ponto['ponto_inicial'] ? 'selected' : '' ?>>Yes</option>
+                          <option value="0" <?= !$ponto['ponto_inicial'] ? 'selected' : '' ?>>No</option>
                         </select>
                       </div>
                       <div class="col-md-4">
                         <select name="ponto_final" class="form-control" required>
-                          <option value="1" <?= $ponto['ponto_final'] ? 'selected' : '' ?>>Sim</option>
-                          <option value="0" <?= !$ponto['ponto_final'] ? 'selected' : '' ?>>Não</option>
+                          <option value="1" <?= $ponto['ponto_final'] ? 'selected' : '' ?>>Yes</option>
+                          <option value="0" <?= !$ponto['ponto_final'] ? 'selected' : '' ?>>No</option>
                         </select>
                       </div>
                       <div class="col-md-4 d-flex gap-1">
-                        <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
                         <button type="button" onclick="fecharEditar(<?= $ponto['id'] ?>)"
-                          class="btn btn-secondary btn-sm">Cancelar</button>
+                          class="btn btn-secondary btn-sm">Cancel</button>
                       </div>
                     </form>
                   </td>
                 </tr>
                 <?php endwhile; } catch (PDOException $e) {
-                  echo '<tr><td colspan="7">Erro ao carregar os pontos: ' . $e->getMessage() . '</td></tr>';
+                  echo '<tr><td colspan="7">Error loading points: ' . $e->getMessage() . '</td></tr>';
                 } ?>
               </tbody>
             </table>

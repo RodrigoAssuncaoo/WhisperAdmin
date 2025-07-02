@@ -4,7 +4,7 @@ include 'includes/header.php';
 include 'includes/sidebar.php';
 
 if (!isset($_GET['id'])) {
-    die("ID não fornecido.");
+    die("ID not provided.");
 }
 
 $id = $_GET['id'];
@@ -20,7 +20,7 @@ $pontos = $stmtPontos->fetchAll();
 
 <main id="main" class="main">
     <div class="pagetitle">
-        <h1>Detalhes do Roteiro</h1>
+        <h1>Route Details</h1>
     </div>
 
     <section class="section">
@@ -30,8 +30,8 @@ $pontos = $stmtPontos->fetchAll();
                     <div class="card-body">
                         <h4 class="card-title mb-4"><?= htmlspecialchars($roteiro['nome']) ?></h4>
 
-                        <p><strong>Tipo:</strong> <?= htmlspecialchars($roteiro['tipo_nome']) ?></p>
-                        <h5>Pontos do Roteiro:</h5>
+                        <p><strong>Type:</strong> <?= htmlspecialchars($roteiro['tipo_nome']) ?></p>
+                        <h5>Route Points:</h5>
                         <ul class="list-group">
                             <?php foreach ($pontos as $p): ?>
                                 <li class="list-group-item"><?= htmlspecialchars($p['nome']) ?>
@@ -41,7 +41,7 @@ $pontos = $stmtPontos->fetchAll();
                         </ul>
 
                         <div class="mt-4 d-flex justify-content-end">
-                            <a href="tables/roteirostable.php" class="btn btn-secondary">Voltar</a>
+                            <a href="tables/roteirostable.php" class="btn btn-secondary">Back</a>
                         </div>
                     </div>
                 </div>

@@ -7,7 +7,7 @@
 
 <main id="main" class="main">
     <div class="pagetitle">
-        <h1>Roteiros</h1>
+        <h1>Routes</h1>
     </div>
 
     <section class="section">
@@ -15,11 +15,11 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Lista de Roteiros</h5>
+                        <h5 class="card-title">List of Routes</h5>
 
                         <div class="mb-3 d-flex justify-content-between flex-wrap gap-2">
                             <a href="../adicionar_roteiro.php" class="btn btn-success btn-sm rounded d-flex align-items-center justify-content-center">
-                                <i class="fa fa-plus me-1"></i> Adicionar Roteiro
+                                <i class="fa fa-plus me-1"></i> Add Route
                             </a>
                         </div>
 
@@ -32,9 +32,9 @@
                         <table class="table datatable">
                             <thead>
                                 <tr>
-                                    <th>Nome</th>
-                                    <th>Tipo</th>
-                                    <th>Ações</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -47,14 +47,14 @@
                                             <td><?= htmlspecialchars($r['nome']) ?></td>
                                             <td><?= htmlspecialchars($r['tipo']) ?></td>
                                             <td class="d-flex gap-1 flex-wrap">
-                                                <a href="../detalhes_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-info btn-sm">Detalhes</a>
-                                                <a href="../atualizar_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                                                <a href="../apagar_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Deseja apagar este roteiro?')">Eliminar</a>
+                                                <a href="../detalhes_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-info btn-sm">Details</a>
+                                                <a href="../atualizar_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="../apagar_roteiro.php?id=<?= $r['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this route?')">Delete</a>
                                             </td>
                                         </tr>
                                 <?php endwhile;
                                 } catch (PDOException $e) {
-                                    echo '<tr><td colspan="4">Erro ao carregar os roteiros.</td></tr>';
+                                    echo '<tr><td colspan="4">Error loading routes.</td></tr>';
                                 } ?>
                             </tbody>
                         </table>

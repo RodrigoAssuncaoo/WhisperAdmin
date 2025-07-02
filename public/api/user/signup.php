@@ -11,6 +11,7 @@ try {
         http_response_code(405);
         echo json_encode([
             "success" => false,
+            "message" => "",
             "error" => "Método não permitido"
         ]);
         exit;
@@ -26,6 +27,7 @@ try {
         http_response_code(400);
         echo json_encode([
             "success" => false,
+            "message" => "",
             "error" => "Todos os campos são obrigatórios."
         ]);
         exit;
@@ -35,6 +37,7 @@ try {
         http_response_code(400);
         echo json_encode([
             "success" => false,
+            "message" => "",
             "error" => "As senhas não coincidem."
         ]);
         exit;
@@ -51,6 +54,7 @@ try {
         http_response_code(409);
         echo json_encode([
             "success" => false,
+            "message" => "",
             "error" => "Este email já está em uso."
         ]);
         exit;
@@ -68,15 +72,17 @@ try {
         http_response_code(201);
         echo json_encode([
             "success" => true,
-            "message" => "Utilizador registado com sucesso"
+            "message" => "Utilizador registado com sucesso",
+            "error" => ""
         ]);
     } else {
         throw new Exception("Erro ao registar utilizador.");
     }
-    } catch (Exception $e) {
+} catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
+        "message" => "",
         "error" => $e->getMessage()
     ]);
 }
