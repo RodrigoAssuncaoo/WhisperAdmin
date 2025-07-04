@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'includes/isAdmin.php';
 include 'includes/header.php';
 include 'includes/sidebar.php';
 require_once '../../backend/db.php';

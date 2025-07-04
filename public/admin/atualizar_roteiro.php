@@ -1,9 +1,15 @@
 <?php
+ob_start(); // <- ADICIONADO AQUI
 require_once '../../backend/db.php';
-include 'includes/header.php'; 
-include 'includes/sidebar.php'; 
+
 $id = $_GET['id'];
+
 try {
+    // Incluímos após o ob_start
+    include 'includes/header.php'; 
+    include 'includes/sidebar.php'; 
+
+    // Obter dados do roteiro
     $stmt = $pdo->prepare("SELECT * FROM roteiros WHERE id = ?");
     $stmt->execute([$id]);
     $roteiro = $stmt->fetch();
@@ -91,3 +97,4 @@ try {
 
 <?php include 'includes/footer.php'; ?>
 <?php include 'includes/script.php'; ?>
+<?php ob_end_flush(); // <- ADICIONADO AQUI ?>

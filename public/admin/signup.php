@@ -102,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               <div class="d-flex justify-content-center py-4">
                 <a href="/" class="logo d-flex align-items-center w-auto">
                   <img src="/assets/img/logo/logo_em_grande/logo_corrigido.png" alt="Whisper Logo">
-                  <span class="d-none d-lg-block">Whisper</span>
                 </a>
               </div>
 
@@ -159,6 +158,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                    </div>
+                    <div class="text-center mt-3">
+                      <p class="small">Already have an account? <a href="../admin/login.php">Log on your account</a></p>
                     </div>
                   </form>
 

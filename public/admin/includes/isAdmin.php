@@ -1,33 +1,34 @@
 <?php
-require_once '../../../backend/db.php';
-session_start(); // Inicia a sessão
+// Ativa a sessão apenas se ainda não estiver ativa
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once '../../backend/db.php'; // Ajusta o caminho se necessário
 
 try {
-    // Verifica se o usuário está logado e se a role é admin
+    // Verifica se o utilizador está autenticado
     if (!isset($_SESSION['user_id'])) {
-        throw new Exception("Acesso não autorizado.");
+        // Redireciona para login se não estiver autenticado
+        header("Location: /login.php");
+        exit;
     }
 
-    // Obtém o ID do usuário logado
-    $user_id = $_SESSION['user_id'];
+    $userId = $_SESSION['user_id'];
 
-    // Verifica a role do usuário
-    $stmt = $pdo->prepare("SELECT role FROM users WHERE id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
+    // Verifica se o utilizador é admin (role = 1)
+    $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user && $user['role'] == 1) {
-        // O usuário é admin
-        echo "Bem-vindo, admin!";
-    } else {
-        // O usuário não é admin
-        throw new Exception("Acesso restrito. Somente administradores podem acessar esta página.");
+    if (!$user || $user['role'] != 1) {
+        // Se não for admin, redireciona para o site normal
+        header("Location: /index.php");
+        exit;
     }
 
 } catch (Exception $e) {
-    // Define a mensagem de erro na sessão
-    $_SESSION['error'] = $e->getMessage();
-    header("Location: index.php?erro=" . urlencode($e->getMessage()));
+    // Em caso de erro, redireciona para o site normal
+    header("Location: /index.php");
     exit;
 }
-?>
